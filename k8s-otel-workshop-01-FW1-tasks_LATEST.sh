@@ -284,7 +284,7 @@ fi
 
 # pause for 1 minute to allow petclinic deployment
 date_string="$(date)"
-echo -n "** $date_string - FW#1 step - minikube: pause for 1 minute to allow petclinic deployment"
+echo -n "** $date_string - FW#1 step - petclinic: pause for 1 minute to allow petclinic deployment"
 sleep 60
 
 # deploy the petclinic app as the splunk user
