@@ -124,7 +124,7 @@ fi
 
 # copy the k8s_workshop and petclinic directory to the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - petclinic: copy the k8s_otel directory to the splunk user"
+echo -n "** $date_string - AW#1 step - otel: copy the k8s_otel directory to the splunk user"
 rm -rf /home/splunk/k8s_workshop/k8s_otel; sleep 1
 sudo cp -rf ~/k8s_workshop/k8s_otel /home/splunk/k8s_workshop/k8s_otel; sleep 1
 if [ $? = 0 ]; then
