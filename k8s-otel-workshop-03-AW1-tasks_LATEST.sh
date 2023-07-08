@@ -228,6 +228,11 @@ else
 echo " .... failed"
 fi
 
+# pause for 1 minute(s) to allow petclinic container deletion
+date_string="$(date)"
+echo -n "** $date_string - FW#1 step - petclinic: pause for 1 minute(s) to allow petclinic container deletion"
+sleep 60
+
 # delete the old container from the minikube docker registry
 date_string="$(date)"
 echo -n "** $date_string - AW#1 step - petclinic: delete the old container from the minikube docker registry"
