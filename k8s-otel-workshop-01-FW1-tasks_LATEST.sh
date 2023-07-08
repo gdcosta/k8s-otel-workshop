@@ -198,6 +198,11 @@ fi
 date_string="$(date)"
 echo -n "** $date_string - FW#1 step - minikube: pause for 5 minutes to allow minikube start"
 sleep 60
+if [ $? = 0 ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
 
 # start minikube as the splunk user
 date_string="$(date)"
@@ -286,6 +291,11 @@ fi
 date_string="$(date)"
 echo -n "** $date_string - FW#1 step - petclinic: pause for 1 minute to allow petclinic deployment"
 sleep 60
+if [ $? = 0 ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
 
 # deploy the petclinic app as the splunk user
 date_string="$(date)"
