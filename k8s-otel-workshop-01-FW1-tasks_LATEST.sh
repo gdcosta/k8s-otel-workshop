@@ -194,6 +194,11 @@ else
 echo " .... failed"
 fi
 
+# pause for 5 minutes to allow minikube start
+date_string="$(date)"
+echo -n "** $date_string - FW#1 step - minikube: pause for 5 minutes to allow minikube start"
+sleep 300
+
 # start minikube as the splunk user
 date_string="$(date)"
 echo -n "** $date_string - FW#1 step - minikube: start minikube as the splunk user"; sleep 2
