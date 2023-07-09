@@ -542,7 +542,7 @@ fi
 
 # pause for 1 minute(s) to allow petclinic app deletion
 date_string="$(date)"
-echo -n "** $date_string - FW#1 step - petclinic: pause for 1 minute(s) to allow petclinic app deletion"
+echo -n "** $date_string - FW#2 step - petclinic: pause for 1 minute(s) to allow petclinic app deletion"
 sleep 60
 if [ $? = 0 ]; then
 echo " .... done"
