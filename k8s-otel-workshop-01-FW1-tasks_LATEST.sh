@@ -194,9 +194,9 @@ else
 echo " .... failed"
 fi
 
-# pause for 1 minutes to allow minikube start
+# pause for 1 minute(s) to allow minikube start
 date_string="$(date)"
-echo -n "** $date_string - FW#1 step - minikube: pause for 5 minutes to allow minikube start"
+echo -n "** $date_string - FW#1 step - minikube: pause for 1 minute(s) to allow minikube start"
 sleep 60
 if [ $? = 0 ]; then
 echo " .... done"
@@ -287,9 +287,9 @@ else
 echo " .... failed"
 fi
 
-# pause for 1 minute to allow petclinic deployment
+# pause for 1 minute(s) to allow petclinic deployment
 date_string="$(date)"
-echo -n "** $date_string - FW#1 step - petclinic: pause for 1 minute to allow petclinic deployment"
+echo -n "** $date_string - FW#1 step - petclinic: pause for 1 minute(s) to allow petclinic deployment"
 sleep 60
 if [ $? = 0 ]; then
 echo " .... done"
