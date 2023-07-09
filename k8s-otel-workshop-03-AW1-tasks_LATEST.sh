@@ -471,6 +471,60 @@ else
 echo " .... failed"
 fi
 
+
+
+# download the splunk metrics dashboard
+date_string="$(date)"
+echo -n "** $date_string - AW#1 step - splunk_core: download the splunk metrics dashboard"
+cd ~/k8s_workshop/splunk_dashboard; sleep 1
+result="$(wget https://github.com/gdcosta/splunk-apm-dashboard/raw/main/k8s_metrics_dashboard.html 2>&1 | grep "^HTTP" | tail -1 | sed -e 's/^HTTP request sent, awaiting response... //g;' | awk '{print $1}')"; sleep 1
+if [ $result = 200 ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# create a new splunk dashboard template via rest api
+date_string="$(date)"
+echo -n "** $date_string - AW#1 step - splunk_core: create a new splunk dashboard template via rest api"
+app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
+dash_name="$(echo "$WS_USER-_k8s_metrics_dashboard" | sed -e 's/-_k8s_metrics_dashboard/_k8s_metrics_dashboard/g')"; sleep 1
+result="$(curl -k -u admin:\!spl8nk* https://$PUBLIC_IP:8089/servicesNS/admin/$app_name/data/ui/views -d "name=$dash_name&eai:data=<dashboard><label>the_new_label</label></dashboard>" 2>&1 | grep "    <title>" | awk -F\> '{print $2}' | awk -F\< '{print $1}')"; sleep 1
+if [ $result = "$dash_name" ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# update splunk dashboard template permissions via rest api
+date_string="$(date)"
+echo -n "** $date_string - AW#1 step - splunk_core: update splunk dashboard template permissions via rest api"
+app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
+dash_name="$(echo "$WS_USER-_k8s_metrics_dashboard" | sed -e 's/-_k8s_metrics_dashboard/_k8s_metrics_dashboard/g')"; sleep 1
+result="$(curl -k -u admin:\!spl8nk* https://$PUBLIC_IP:8089/servicesNS/admin/$app_name/data/ui/views/$dash_name/acl -d owner=admin -d perms.read=* -d sharing=app -d perms.write=admin,power 2>&1 | grep "    <title>" | awk -F\> '{print $2}' | awk -F\< '{print $1}')"; sleep 1
+if [ $result = "$dash_name" ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# update the physical dashboard xml file
+date_string="$(date)"
+echo -n "** $date_string - AW#1 step - splunk_core: update the physical dashboard xml file"
+app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
+dash_name="$(echo "$WS_USER-_k8s_metrics_dashboard" | sed -e 's/-_k8s_metrics_dashboard/_k8s_metrics_dashboard/g')"; sleep 1
+cd ~/k8s_workshop/splunk_dashboard; sleep 1
+cat ~/k8s_workshop/splunk_dashboard/k8s_metrics_dashboard.xml | sudo tee /opt/splunk/etc/apps/$app_name/local/data/ui/views/$dash_name.xml > /dev/null 2> /dev/null; sleep 1
+if [ $? = 0 ]; then
+sudo chown splunk:docker /opt/splunk/etc/apps/$app_name/local/data/ui/views/$dash_name.xml; sleep 1
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+
+
+
 # restart the splunk platform to load new dashboard
 date_string="$(date)"
 echo -n "** $date_string - AW#1 step - splunk_core: restart the splunk platform to load new dashboard"
