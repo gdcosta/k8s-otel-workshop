@@ -477,7 +477,7 @@ fi
 date_string="$(date)"
 echo -n "** $date_string - AW#1 step - splunk_core: download the splunk metrics dashboard"
 cd ~/k8s_workshop/splunk_dashboard; sleep 1
-result="$(wget https://github.com/gdcosta/splunk-apm-dashboard/raw/main/k8s_metrics_dashboard.html 2>&1 | grep "^HTTP" | tail -1 | sed -e 's/^HTTP request sent, awaiting response... //g;' | awk '{print $1}')"; sleep 1
+result="$(wget https://github.com/gdcosta/splunk-apm-dashboard/raw/main/k8s_metrics_dashboard.xml 2>&1 | grep "^HTTP" | tail -1 | sed -e 's/^HTTP request sent, awaiting response... //g;' | awk '{print $1}')"; sleep 1
 if [ $result = 200 ]; then
 echo " .... done"
 else
