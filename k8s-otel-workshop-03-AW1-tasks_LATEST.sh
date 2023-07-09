@@ -230,7 +230,7 @@ fi
 
 # pause for 1 minute(s) to allow petclinic container deletion
 date_string="$(date)"
-echo -n "** $date_string - FW#1 step - petclinic: pause for 1 minute(s) to allow petclinic container deletion"
+echo -n "** $date_string - AW#1 step - petclinic: pause for 1 minute(s) to allow petclinic container deletion"
 sleep 60
 if [ $? = 0 ]; then
 echo " .... done"
