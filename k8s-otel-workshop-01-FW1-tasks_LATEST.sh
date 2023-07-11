@@ -194,9 +194,9 @@ else
 echo " .... failed"
 fi
 
-# pause for 1 minute(s) to allow minikube start
+# pause for 1 minute(s) before minikube start
 date_string="$(date)"
-echo -n "** $date_string - FW#1 step - minikube: pause for 1 minute(s) to allow minikube start"
+echo -n "** $date_string - FW#1 step - minikube: pause for 1 minute(s) before minikube start"
 sleep 60
 if [ $? = 0 ]; then
 echo " .... done"
@@ -209,6 +209,36 @@ date_string="$(date)"
 echo -n "** $date_string - FW#1 step - minikube: start minikube as the splunk user"; sleep 2
 result="$(sudo -H -u splunk bash -c "minikube start --no-vtx-check --driver=docker --subnet=192.168.49.0/24 --extra-config=apiserver.audit-policy-file=/etc/ssl/certs/audit-policy.yaml --extra-config=apiserver.audit-log-path=-" 2>&1 | grep "Done" | awk '{print $2}')"; sleep 2
 if [ $result = "Done!" ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# pause for 30 second(s) after minikube start
+date_string="$(date)"
+echo -n "** $date_string - FW#1 step - minikube: pause for 30 second(s) after minikube start"
+sleep 30
+if [ $? = 0 ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# Install a new cert manager for HELM
+date_string="$(date)"
+echo -n "** $date_string - FW#1 step - minikube: Install a new cert manager for HELM"
+result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml" 2>&1 | tail -1 | awk '{print $2}')"; sleep 1
+if [ $result = "created" ] || [ $result = "configured" ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# pause for 30 second(s) after cert manager install
+date_string="$(date)"
+echo -n "** $date_string - FW#1 step - minikube: pause for 30 second(s) after cert manager install"
+sleep 30
+if [ $? = 0 ]; then
 echo " .... done"
 else
 echo " .... failed"
