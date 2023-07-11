@@ -71,16 +71,16 @@ else
 	fi
 fi
 
-# Install a new cert manager for HELM
-date_string="$(date)"
-echo -n "** $date_string - FW#2 step - helm: Install a new cert manager for HELM"
-result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml" 2>&1 | tail -1 | awk '{print $2}')"; sleep 1
-if [ $result = "created" ] || [ $result = "configured" ]; then
-echo " .... done"
-else
-echo " .... failed"
-fi
-
+# # Install a new cert manager for HELM
+# date_string="$(date)"
+# echo -n "** $date_string - FW#2 step - helm: Install a new cert manager for HELM"
+# result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml" 2>&1 | tail -1 | awk '{print $2}')"; sleep 1
+# if [ $result = "created" ] || [ $result = "configured" ]; then
+# echo " .... done"
+# else
+# echo " .... failed"
+# fi
+#
 # # add a new apt key to Ubuntu to install HELM
 # date_string="$(date)"
 # echo -n "** $date_string - FW#2 step - helm: add a new apt key and source list to Ubuntu to install HELM"
