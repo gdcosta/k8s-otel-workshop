@@ -207,7 +207,7 @@ fi
 # start minikube as the splunk user
 date_string="$(date)"
 echo -n "** $date_string - FW#1 step - minikube: start minikube as the splunk user"; sleep 2
-result="$(sudo -H -u splunk bash -c "minikube start --no-vtx-check --driver=docker --subnet=192.168.49.0/24 --extra-config=apiserver.audit-policy-file=/etc/ssl/certs/audit-policy.yaml --extra-config=apiserver.audit-log-path=-" 2>&1 | grep "Done" | awk '{print $2}')"; sleep 2
+result="$(sudo -H -u splunk bash -c "newgrp docker; minikube start --no-vtx-check --driver=docker --subnet=192.168.49.0/24 --extra-config=apiserver.audit-policy-file=/etc/ssl/certs/audit-policy.yaml --extra-config=apiserver.audit-log-path=-" 2>&1 | grep "Done" | awk '{print $2}')"; sleep 2
 if [ $result = "Done!" ]; then
 echo " .... done"
 else
