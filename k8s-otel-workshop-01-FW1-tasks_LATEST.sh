@@ -210,6 +210,32 @@ else
 echo " .... failed"
 fi
 
+# set minikube driver as docker
+date_string="$(date)"
+echo -n "** $date_string - FW#1 step - minikube: set minikube driver as docker"; sleep 2
+echo "** $date_string - FW#1 step - minikube: set minikube driver as docker" >> ~/debug.txt
+result="$(sudo -H -u splunk bash -c "minikube config set driver docker" &> /tmp/k8s_output.txt)"; sleep 2
+cat /tmp/k8s_output.txt >> ~/debug.txt
+result="$(cat /tmp/k8s_output.txt | grep "effect" | awk '{print $6}')"; sleep 1
+if [ $result = "effect" ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# delete minikube
+date_string="$(date)"
+echo -n "** $date_string - FW#1 step - minikube: delete minikube"; sleep 2
+echo "** $date_string - FW#1 step - minikube: delete minikube" >> ~/debug.txt
+result="$(sudo -H -u splunk bash -c "minikube delete" &> /tmp/k8s_output.txt)"; sleep 2
+cat /tmp/k8s_output.txt >> ~/debug.txt
+result="$(cat /tmp/k8s_output.txt | grep "Removed" | awk '{print $2}')"; sleep 1
+if [ $result = "Removed" ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
 # pause for 1 minute(s) before minikube start
 date_string="$(date)"
 echo -n "** $date_string - FW#1 step - minikube: pause for 1 minute(s) before minikube start"
