@@ -393,7 +393,7 @@ $stanza1
 SOURCE_KEY = field:k8s.pod.labels.app
 REGEX = $WS_USER-petclinic-otel-app
 DEST_KEY = MetaData:Sourcetype
-FORMAT = sourcetype::k8s:traces:<YOUR_INITIALS>-petclinic-app
+FORMAT = sourcetype::k8s:traces:$WS_USER-petclinic-app
 
 $stanza2
 SOURCE_KEY = field:k8s.pod.labels.app
