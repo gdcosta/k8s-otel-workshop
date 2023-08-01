@@ -87,34 +87,34 @@ fi
 # echo " .... failed"
 # fi
 
-# add docker group
-date_string="$(date)"
-echo -n "** $date_string - FW#1 step - docker: add docker group - "
-echo "** $date_string - FW#1 step - docker: add docker group - " >> ~/debug.txt
-result="$(sudo groupadd docker &> /tmp/k8s_output.txt)"; sleep 1
-cat /tmp/k8s_output.txt >> ~/debug.txt
-result="$(sudo cat /tmp/k8s_output.txt | sed -e 's/\n//g;')"; sleep 1
-echo -n "$result"
-echo " .... done"
-
-# add splunk user to docker group
-date_string="$(date)"
-echo -n "** $date_string - FW#1 step - docker: add splunk user to docker group - "
-echo "** $date_string - FW#1 step - docker: add splunk user to docker group - " >> ~/debug.txt
-sudo usermod -aG docker splunk; sleep 1
-sudo usermod -aG docker ubuntu; sleep 1
-if [ $? = 0 ]; then
-echo " .... done"
-else
-echo " .... failed"
-fi
-
-# add minikube and newgrp docker command in bash .profile
-date_string="$(date)"
-echo -n "** $date_string - FW#1 step - minikube: add minikube and newgrp docker command in bash .profile"
-echo "** $date_string - FW#1 step - minikube: add minikube and newgrp docker command in bash .profile" >> ~/debug.txt
-sudo printf "\n# added - splunk k8s workshop: minikube\neval \$(minikube -p minikube docker-env)\n\n# added - splunk k8s workshop: docker\nnewgrp docker\n" | sudo tee --append /home/splunk/.profile &>> ~/debug.txt; sleep 1
-echo " .... done"
+# # add docker group
+# date_string="$(date)"
+# echo -n "** $date_string - FW#1 step - docker: add docker group - "
+# echo "** $date_string - FW#1 step - docker: add docker group - " >> ~/debug.txt
+# result="$(sudo groupadd docker &> /tmp/k8s_output.txt)"; sleep 1
+# cat /tmp/k8s_output.txt >> ~/debug.txt
+# result="$(sudo cat /tmp/k8s_output.txt | sed -e 's/\n//g;')"; sleep 1
+# echo -n "$result"
+# echo " .... done"
+# 
+# # add splunk user to docker group
+# date_string="$(date)"
+# echo -n "** $date_string - FW#1 step - docker: add splunk user to docker group - "
+# echo "** $date_string - FW#1 step - docker: add splunk user to docker group - " >> ~/debug.txt
+# sudo usermod -aG docker splunk; sleep 1
+# sudo usermod -aG docker ubuntu; sleep 1
+# if [ $? = 0 ]; then
+# echo " .... done"
+# else
+# echo " .... failed"
+# fi
+# 
+# # add minikube and newgrp docker command in bash .profile
+# date_string="$(date)"
+# echo -n "** $date_string - FW#1 step - minikube: add minikube and newgrp docker command in bash .profile"
+# echo "** $date_string - FW#1 step - minikube: add minikube and newgrp docker command in bash .profile" >> ~/debug.txt
+# sudo printf "\n# added - splunk k8s workshop: minikube\neval \$(minikube -p minikube docker-env)\n\n# added - splunk k8s workshop: docker\nnewgrp docker\n" | sudo tee --append /home/splunk/.profile &>> ~/debug.txt; sleep 1
+# echo " .... done"
 
 # create an audit policy for minikube k8s environment
 date_string="$(date)"
