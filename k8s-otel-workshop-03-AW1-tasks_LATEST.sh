@@ -42,7 +42,7 @@
 date_string="$(date)"
 echo -n "** $date_string - AW#1 step - os: set our workshop variables"
 echo "** $date_string - AW#1 step - os: set our workshop variables" >> ~/debug.txt
-export AMI_INDEX="$(hostname | sed -e "s/k8host//g;")"
+export AMI_INDEX="$(hostname | sed -e "s/k8shost//g;")"
 export WS_USER=$(echo "user$AMI_INDEX")
 export PUBLIC_IP=$(ec2metadata --public-ipv4)
 sleep 1
