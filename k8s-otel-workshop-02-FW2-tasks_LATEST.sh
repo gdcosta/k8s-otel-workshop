@@ -39,6 +39,7 @@ echo "** $date_string - FW#2 step - os: set our workshop variables" >> ~/debug.t
 export AMI_INDEX="$(hostname | sed -e "s/k8shost//g;")"
 export WS_USER=$(echo "user$AMI_INDEX")
 export PUBLIC_IP=$(ec2metadata --public-ipv4)
+export LOCAL_IP=$(ec2metadata --local-ipv4)
 sleep 1
 echo " .... done"
 
