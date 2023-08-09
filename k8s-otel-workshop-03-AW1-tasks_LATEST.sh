@@ -494,7 +494,7 @@ echo -n "** $date_string - AW#1 step - splunk_core: create a new splunk dashboar
 echo "** $date_string - AW#1 step - splunk_core: create a new splunk dashboard template via rest api" >> ~/debug.txt
 app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
 dash_name="$(echo "$WS_USER-_apm_dashboard" | sed -e 's/-_apm_dashboard/_apm_dashboard/g')"; sleep 1
-result="$(curl -k -u admin:\!spl8nk* https://$PUBLIC_IP:8089/servicesNS/admin/$app_name/data/ui/views -d "name=$dash_name&eai:data=<dashboard><label>the_new_label</label></dashboard>" &> /tmp/k8s_output.txt)"; sleep 1
+result="$(curl -k -u admin:\!spl8nk* https://$LOCAL_IP:8089/servicesNS/admin/$app_name/data/ui/views -d "name=$dash_name&eai:data=<dashboard><label>the_new_label</label></dashboard>" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "    <title>" | awk -F\> '{print $2}' | awk -F\< '{print $1}')"; sleep 1
 if [ $result = "$dash_name" ]; then
@@ -509,7 +509,7 @@ echo -n "** $date_string - AW#1 step - splunk_core: update splunk dashboard temp
 echo "** $date_string - AW#1 step - splunk_core: update splunk dashboard template permissions via rest api" >> ~/debug.txt
 app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
 dash_name="$(echo "$WS_USER-_apm_dashboard" | sed -e 's/-_apm_dashboard/_apm_dashboard/g')"; sleep 1
-result="$(curl -k -u admin:\!spl8nk* https://$PUBLIC_IP:8089/servicesNS/admin/$app_name/data/ui/views/$dash_name/acl -d owner=admin -d perms.read=* -d sharing=app -d perms.write=admin,power &> /tmp/k8s_output.txt)"; sleep 1
+result="$(curl -k -u admin:\!spl8nk* https://$LOCAL_IP:8089/servicesNS/admin/$app_name/data/ui/views/$dash_name/acl -d owner=admin -d perms.read=* -d sharing=app -d perms.write=admin,power &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "    <title>" | awk -F\> '{print $2}' | awk -F\< '{print $1}')"; sleep 1
 if [ $result = "$dash_name" ]; then
@@ -557,7 +557,7 @@ echo -n "** $date_string - AW#1 step - splunk_core: create a new splunk dashboar
 echo "** $date_string - AW#1 step - splunk_core: create a new splunk dashboard template via rest api" >> ~/debug.txt
 app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
 dash_name="$(echo "$WS_USER-_k8s_metrics_dashboard" | sed -e 's/-_k8s_metrics_dashboard/_k8s_metrics_dashboard/g')"; sleep 1
-result="$(curl -k -u admin:\!spl8nk* https://$PUBLIC_IP:8089/servicesNS/admin/$app_name/data/ui/views -d "name=$dash_name&eai:data=<dashboard><label>the_new_label</label></dashboard>" &> /tmp/k8s_output.txt)"; sleep 1
+result="$(curl -k -u admin:\!spl8nk* https://$LOCAL_IP:8089/servicesNS/admin/$app_name/data/ui/views -d "name=$dash_name&eai:data=<dashboard><label>the_new_label</label></dashboard>" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "    <title>" | awk -F\> '{print $2}' | awk -F\< '{print $1}')"; sleep 1
 if [ $result = "$dash_name" ]; then
@@ -572,7 +572,7 @@ echo -n "** $date_string - AW#1 step - splunk_core: update splunk dashboard temp
 echo "** $date_string - AW#1 step - splunk_core: update splunk dashboard template permissions via rest api" >> ~/debug.txt
 app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
 dash_name="$(echo "$WS_USER-_k8s_metrics_dashboard" | sed -e 's/-_k8s_metrics_dashboard/_k8s_metrics_dashboard/g')"; sleep 1
-result="$(curl -k -u admin:\!spl8nk* https://$PUBLIC_IP:8089/servicesNS/admin/$app_name/data/ui/views/$dash_name/acl -d owner=admin -d perms.read=* -d sharing=app -d perms.write=admin,power &> /tmp/k8s_output.txt)"; sleep 1
+result="$(curl -k -u admin:\!spl8nk* https://$LOCAL_IP:8089/servicesNS/admin/$app_name/data/ui/views/$dash_name/acl -d owner=admin -d perms.read=* -d sharing=app -d perms.write=admin,power &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "    <title>" | awk -F\> '{print $2}' | awk -F\< '{print $1}')"; sleep 1
 if [ $result = "$dash_name" ]; then
