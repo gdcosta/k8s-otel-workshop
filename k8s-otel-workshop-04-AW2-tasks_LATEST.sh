@@ -569,7 +569,7 @@ fi
 date_string="$(date)"
 echo -n "** $date_string - AW#2 step - jmeter: RUM: update the petclinic_browser_test.jmx file"
 echo "** $date_string - AW#2 step - jmeter: RUM: update the petclinic_browser_test.jmx file" >> ~/debug.txt
-cat ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx | sed -e "s/            <stringProp name=\"Argument.value\">\${__P(url,http:\/\/<UBUNTU_EXTERNAL_IP>)}<\/stringProp>/            <stringProp name=\"Argument.value\">\${__P(url,http:\/\/$PUBLIC_IP)}<\/stringProp>/g;" >  ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx_1; sleep 1
+cat ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx | sed -e "s/            <stringProp name=\"Argument.value\">\${__P(url,http:\/\/<UBUNTU_EXTERNAL_IP>)}<\/stringProp>/            <stringProp name=\"Argument.value\">\${__P(url,http:\/\/$LOCAL_IP)}<\/stringProp>/g;" >  ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx_1; sleep 1
 rm ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx; sleep 1
 mv ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx_1 ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx; sleep 1
 if [ $? = 0 ]; then
