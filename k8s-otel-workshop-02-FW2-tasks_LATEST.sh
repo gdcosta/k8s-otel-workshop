@@ -450,7 +450,7 @@ date_string="$(date)"
 echo -n "** $date_string - FW#2 step - jmeter: download apache jmeter binaries"
 echo "** $date_string - FW#2 step - jmeter: download apache jmeter binaries" >> ~/debug.txt
 cd ~/k8s_workshop/jmeter; sleep 1
-result="$(wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1qqeOFxfjuZPzmJtKtdQazj4PYSo3edop' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1qqeOFxfjuZPzmJtKtdQazj4PYSo3edop" -O apache-jmeter-5.5-gdcosta.tgz &> /tmp/k8s_output.txt; rm -rf /tmp/cookies.txt)"; sleep 1
+result="$(wget --load-cookies /tmp/cookies.txt "https://drive.usercontent.google.com/download?export=download&confirm=t&uuid=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1qqeOFxfjuZPzmJtKtdQazj4PYSo3edop' -O- | grep -Eo '\w{8}-\w{4}-\w{4}-\w{4}-\w{12}')&id=1qqeOFxfjuZPzmJtKtdQazj4PYSo3edop" -O apache-jmeter-5.5-gdcosta.tgz && rm -rf /tmp/cookies.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "^HTTP" | tail -1 | sed -e 's/^HTTP request sent, awaiting response... //g;' | awk '{print $1}')"; sleep 1
 if [ $result = 200 ]; then
