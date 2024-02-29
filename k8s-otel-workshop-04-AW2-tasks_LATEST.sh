@@ -307,7 +307,212 @@ echo " .... failed"
 fi
 
 
+# LOG OBSERVER: update logging format in application.properties file of the petclinic source to include trace and span info
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: update logging format in application.properties file of the petclinic source to include trace and span info"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: update logging format in application.properties file of the petclinic source to include trace and span info" >> ~/debug.txt
+sudo tee ~/k8s_workshop/petclinic/spring-petclinic/src/main/resources/application.properties <<EOF >> ~/debug.txt
+# database init, supports mysql too
+database=h2
+spring.sql.init.schema-locations=classpath*:db/${database}/schema.sql
+spring.sql.init.data-locations=classpath*:db/${database}/data.sql
 
+# Web
+spring.thymeleaf.mode=HTML
+
+# JPA
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.open-in-view=true
+
+# Internationalization
+spring.messages.basename=messages/messages
+
+# Actuator
+management.endpoints.web.exposure.include=*
+
+# Logging
+logging.level.org.springframework=INFO
+#
+# uncomment the next two lines
+logging.level.org.springframework.web=DEBUG
+logging.level.org.springframework.context.annotation=TRACE
+#
+# Add this logging pattern to output trace info collected via auto-instrumentation
+logging.pattern.console = %d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] - severity=%-5level, - %logger{36} - %msg trace_id=%X{trace_id} span_id=%X{span_id} trace_flags=%X{trace_flags} service=%property{otel.resource.service.name} deploy_env=%property{otel.resource.deployment.environment} %n
+
+# Maximum time static resources should be cached
+spring.web.resources.cache.cachecontrol.max-age=12h
+EOF
+sleep 1
+sudo chown -R ubuntu:docker ~/k8s_workshop; sleep 1
+echo " .... done"
+
+# LOG OBSERVER: enable authentication tokens in splunk enterprise
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - core: enable authentication tokens in splunk enterprise"
+echo "** $date_string - $WORKSHOP_NUM step - core: enable authentication tokens in splunk enterprise" >> ~/debug.txt
+result="$(sudo -H -u splunk bash -c "curl -k -u admin:\!spl8nk* https://localhost:8089/services/admin/token-auth/tokens_auth -d disabled=false" &> /tmp/k8s_output.txt)"; sleep 1
+cat /tmp/k8s_output.txt >> ~/debug.txt
+result="$(cat /tmp/k8s_output.txt | grep "disabled" | awk -F\< '{print $2}' | awk -F\> '{print $2}')"; sleep 1
+if [ $result = "0" ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# # LOG OBSERVER: use MAVEN to build a new petclinic package
+# date_string="$(date)"
+# echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: use MAVEN to build a new petclinic package"
+# echo "** $date_string - $WORKSHOP_NUM step - petclinic: use MAVEN to build a new petclinic package" >> ~/debug.txt
+# cd ~/k8s_workshop/petclinic/spring-petclinic
+# result="$(./mvnw package &> /tmp/k8s_output.txt)"; sleep 1
+# cat /tmp/k8s_output.txt >> ~/debug.txt
+# result="$(cat /tmp/k8s_output.txt | grep "BUILD SUCCESS" | awk '{print $3}')"; sleep 1
+# if [ $result = "SUCCESS" ]; then
+# echo " .... done"
+# else
+# echo " .... failed"
+# fi
+# 
+# 
+# 
+# # LOG OBSERVER: delete current petclinic app in kubernetes as the splunk user
+# date_string="$(date)"
+# echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: delete current petclinic app in kubernetes as the splunk user"
+# echo "** $date_string - $WORKSHOP_NUM step - petclinic: delete current petclinic app in kubernetes as the splunk user" >> ~/debug.txt
+# result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); kubectl delete -f ~/k8s_workshop/petclinic/k8s_deploy/$WS_USER-petclinic-k8s-manifest.yml" &> /tmp/k8s_output.txt)"; sleep 1
+# cat /tmp/k8s_output.txt >> ~/debug.txt
+# result="$(cat /tmp/k8s_output.txt | awk '{print $3}' | tr -d '\n')"; sleep 1
+# if [ $result = "deleteddeleted" ]; then
+# echo " .... done"
+# else
+# echo " .... failed"
+# fi
+# 
+# 
+# # LOG OBSERVER: copy the k8s_workshop and petclinic directory to the splunk user
+# date_string="$(date)"
+# echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user"
+# echo "** $date_string - $WORKSHOP_NUM step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user" >> ~/debug.txt
+# sudo rm -rf /home/splunk/k8s_workshop/petclinic/*
+# sudo cp -rf ~/k8s_workshop/petclinic/* /home/splunk/k8s_workshop/petclinic; sleep 1
+# if [ $? = 0 ]; then
+# sudo chown -R splunk:docker /home/splunk/k8s_workshop; sleep 1
+# echo " .... done"
+# else
+# echo " .... failed"
+# fi
+# 
+# 
+# # LOG OBSERVER: pause for 1 minute(s) to allow petclinic container deletion
+# date_string="$(date)"
+# echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: pause for 1 minute(s) to allow petclinic container deletion"
+# echo "** $date_string - $WORKSHOP_NUM step - petclinic: pause for 1 minute(s) to allow petclinic container deletion" >> ~/debug.txt
+# sleep 60
+# if [ $? = 0 ]; then
+# echo " .... done"
+# else
+# echo " .... failed"
+# fi
+# 
+# 
+# # LOG OBSERVER: delete the old container from the minikube docker registry
+# date_string="$(date)"
+# echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: delete the old container from the minikube docker registry"
+# echo "** $date_string - $WORKSHOP_NUM step - petclinic: delete the old container from the minikube docker registry" >> ~/debug.txt
+# container_id="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); docker images" 2>&1 | grep "petclinic-otel" | awk '{print $3}')"; sleep 1
+# result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); docker rmi -f $container_id" &> /tmp/k8s_output.txt)"; sleep 1
+# cat /tmp/k8s_output.txt >> ~/debug.txt
+# result="$(cat /tmp/k8s_output.txt | grep "Untagged:" | awk '{print $1}')"; sleep 1
+# if [ $result = "Untagged:" ]; then
+# echo " .... done"
+# else
+# echo " .... failed"
+# fi
+# 
+# 
+# # LOG OBSERVER: build the petclinic docker image into the minikube docker registry
+# date_string="$(date)"
+# echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: build the petclinic docker image into the minikube docker registry"
+# echo "** $date_string - $WORKSHOP_NUM step - petclinic: build the petclinic docker image into the minikube docker registry" >> ~/debug.txt
+# result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); cd ~/k8s_workshop/petclinic/spring-petclinic/target; docker build --tag $WS_USER/petclinic-otel:v1 ." &> /tmp/k8s_output.txt)"; sleep 1
+# cat /tmp/k8s_output.txt >> ~/debug.txt
+# result="$(cat /tmp/k8s_output.txt | grep "Successfully built" | awk '{print $2}')"; sleep 1
+# if [ $result = "built" ]; then
+# echo " .... done"
+# else
+# echo " .... failed"
+# fi
+# 
+# 
+# # LOG OBSERVER: deploy the petclinic app in kubernetes as the splunk user
+# date_string="$(date)"
+# echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: deploy the petclinic app in kubernetes as the splunk user"
+# echo "** $date_string - $WORKSHOP_NUM step - petclinic: deploy the petclinic app in kubernetes as the splunk user" >> ~/debug.txt
+# result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); kubectl apply -f ~/k8s_workshop/petclinic/k8s_deploy/$WS_USER-petclinic-k8s-manifest.yml" &> /tmp/k8s_output.txt)"; sleep 1
+# cat /tmp/k8s_output.txt >> ~/debug.txt
+# result="$(cat /tmp/k8s_output.txt | awk '{print $2}' | tr -d '\n')"; sleep 1
+# if [ $result = "createdcreated" ] || [ $result = "createdunchanged" ] || [ $result = "unchangedcreated" ] || [ $result = "unchangedunchanged" ]; then
+# echo " .... done"
+# else
+# echo " .... failed"
+# fi
+
+# LOG OBSERVER: create log observer connect role in splunk enterprise
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - core: create log observer connect role in splunk enterprise"
+echo "** $date_string - $WORKSHOP_NUM step - core: create log observer connect role in splunk enterprise" >> ~/debug.txt
+result="$(sudo -H -u splunk bash -c "curl -k -u admin:\!spl8nk* https://localhost:8089/services/authorization/roles -d name=logobserver-connect-role -d cumulativeRTSrchJobsQuota=0 -d cumulativeSrchJobsQuota=40 -d rtSrchJobsQuota=0 -d srchDiskQuota=1000 -d srchJobsQuota=40 -d srchTimeEarliest=7776000 -d srchTimeWin=2592000 -d capabilities=edit_tokens_own -d capabilities=list_tokens_own -d capabilities=search -d srchIndexesAllowed=k8s_ws_logs -d srchIndexesAllowed=k8s_ws_petclinic_logs" &> /tmp/k8s_output.txt)"; sleep 1
+cat /tmp/k8s_output.txt >> ~/debug.txt
+result="$(cat /tmp/k8s_output.txt | grep "\<id\>" | grep "logobserver-connect-role" | awk -F\< '{print $2}' | awk -F\> '{print $2}' | awk -F\/ '{print $NF}')"; sleep 1
+if [ -z $result ]; then
+echo " .... failed"
+else
+echo " .... done"
+fi
+
+# LOG OBSERVER: create log observer connect system account in splunk enterprise
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - core: create log observer connect system account in splunk enterprise"
+echo "** $date_string - $WORKSHOP_NUM step - core: create log observer connect system account in splunk enterprise" >> ~/debug.txt
+result="$(sudo -H -u splunk bash -c "curl -k -u admin:\!spl8nk* https://localhost:8089/services/authentication/users -d name=logobserver-connect-user -d password=\!spl8nk* -d roles=logobserver-connect-role -d force-change-pass=false -d realname=\"Log Observer Connect\"" &> /tmp/k8s_output.txt)"; sleep 1
+cat /tmp/k8s_output.txt >> ~/debug.txt
+result="$(cat /tmp/k8s_output.txt | grep "\<id\>" | grep "logobserver-connect-user" | awk -F\< '{print $2}' | awk -F\> '{print $2}' | awk -F\/ '{print $NF}')"; sleep 1
+if [ -z $result ]; then 
+echo " .... failed"; 
+else 
+echo " .... done"; 
+fi
+
+
+# LOG OBSERVER: update server.conf file in splunk enterprise to use ssl certs
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - core: update server.conf file in splunk enterprise to use ssl certs"
+echo "** $date_string - $WORKSHOP_NUM step - core: update server.conf file in splunk enterprise to use ssl certs" >> ~/debug.txt
+newServerName="$(curl https://ipinfo.io/ip 2>/dev/null | nslookup | grep "name = " | awk '{print $4}' | sed -e 's/\.$//' | sed "s/\./_/" | awk -F_ '{print "'$(hostname)'."$2}')"
+cat /opt/splunk/etc/system/local/server.conf | sed -e "s/^serverName = k8.*/serverName = $newServerName/" > /opt/splunk/etc/system/local/server.conf_1; sleep 1
+cat /opt/splunk/etc/system/local/server.conf_1 | sed -e "s/^sslPassword = .*$/serverCert = \/opt\/splunk\/etc\/auth\/sloccerts\/myFinalCert.pem\nrequireClientCert = false\ncliVerifyServerName = false/" > /opt/splunk/etc/system/local/server.conf_2; sleep 1
+mv /opt/splunk/etc/system/local/server.conf_2 /opt/splunk/etc/system/local/server.conf; sleep 1
+rm /opt/splunk/etc/system/local/server.conf_*;
+if [ $? = 0 ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# LOG OBSERVER: restart the splunk platform to load server.conf file
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: restart the splunk platform to load server.conf file"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: restart the splunk platform to load server.conf file" >> ~/debug.txt
+command_str="$(echo '/opt/splunk/bin/splunk restart')"
+result="$(sudo -H -u splunk bash -c "$command_str" &> /tmp/k8s_output.txt)"; sleep 5
+cat /tmp/k8s_output.txt >> ~/debug.txt
+result="$(cat /tmp/k8s_output.txt | grep "^Waiting for web server" | awk '{print $10}')"; sleep 1
+if [ $result = "Done" ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
 
 
 
