@@ -347,19 +347,6 @@ sleep 1
 sudo chown -R ubuntu:docker ~/k8s_workshop; sleep 1
 echo " .... done"
 
-# LOG OBSERVER: enable authentication tokens in splunk enterprise
-date_string="$(date)"
-echo -n "** $date_string - $WORKSHOP_NUM step - core: enable authentication tokens in splunk enterprise"
-echo "** $date_string - $WORKSHOP_NUM step - core: enable authentication tokens in splunk enterprise" >> ~/debug.txt
-result="$(sudo -H -u splunk bash -c "curl -k -u admin:\!spl8nk* https://localhost:8089/services/admin/token-auth/tokens_auth -d disabled=false" &> /tmp/k8s_output.txt)"; sleep 1
-cat /tmp/k8s_output.txt >> ~/debug.txt
-result="$(cat /tmp/k8s_output.txt | grep "disabled" | awk -F\< '{print $2}' | awk -F\> '{print $2}')"; sleep 1
-if [ $result = "0" ]; then
-echo " .... done"
-else
-echo " .... failed"
-fi
-
 # # LOG OBSERVER: use MAVEN to build a new petclinic package
 # date_string="$(date)"
 # echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: use MAVEN to build a new petclinic package"
@@ -457,6 +444,19 @@ fi
 # else
 # echo " .... failed"
 # fi
+
+# LOG OBSERVER: enable authentication tokens in splunk enterprise
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - core: enable authentication tokens in splunk enterprise"
+echo "** $date_string - $WORKSHOP_NUM step - core: enable authentication tokens in splunk enterprise" >> ~/debug.txt
+result="$(sudo -H -u splunk bash -c "curl -k -u admin:\!spl8nk* https://localhost:8089/services/admin/token-auth/tokens_auth -d disabled=false" &> /tmp/k8s_output.txt)"; sleep 1
+cat /tmp/k8s_output.txt >> ~/debug.txt
+result="$(cat /tmp/k8s_output.txt | grep "disabled" | awk -F\< '{print $2}' | awk -F\> '{print $2}')"; sleep 1
+if [ $result = "0" ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
 
 # LOG OBSERVER: create log observer connect role in splunk enterprise
 date_string="$(date)"
