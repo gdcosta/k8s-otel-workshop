@@ -494,6 +494,7 @@ cat /opt/splunk/etc/system/local/server.conf | sed -e "s/^serverName = k8.*/serv
 cat /opt/splunk/etc/system/local/server.conf_1 | sed -e "s/^sslPassword = .*$/serverCert = \/opt\/splunk\/etc\/auth\/sloccerts\/myFinalCert.pem\nrequireClientCert = false\ncliVerifyServerName = false/" > /opt/splunk/etc/system/local/server.conf_2; sleep 1
 mv /opt/splunk/etc/system/local/server.conf_2 /opt/splunk/etc/system/local/server.conf; sleep 1
 rm /opt/splunk/etc/system/local/server.conf_*;
+sudo chown -R splunk:docker /opt/splunk/etc/system/local; sleep 1
 if [ $? = 0 ]; then
 echo " .... done"
 else
