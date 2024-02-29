@@ -36,12 +36,15 @@
 #      - redirect logs using the HELM manifest file
 #
 
+# Global variables
+export WORKSHOP_NUM="AW#1"
+
 #
 # setup - environment variable setup
 #
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - os: set our workshop variables"
-echo "** $date_string - AW#1 step - os: set our workshop variables" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - os: set our workshop variables"
+echo "** $date_string - $WORKSHOP_NUM step - os: set our workshop variables" >> ~/debug.txt
 export AMI_INDEX="$(hostname | sed -e "s/k8shost//g;")"
 export WS_USER=$(echo "user$AMI_INDEX")
 export PUBLIC_IP=$(ec2metadata --public-ipv4)
@@ -51,8 +54,8 @@ echo " .... done"
 
 # make sure we are in our home directory
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - os: change to home directory"
-echo "** $date_string - AW#1 step - os: change to home directory" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - os: change to home directory"
+echo "** $date_string - $WORKSHOP_NUM step - os: change to home directory" >> ~/debug.txt
 cd ~/; sleep 1
 if [ $? = 0 ]; then
 echo " .... done"
@@ -67,8 +70,8 @@ fi
 
 # start the splunk platform
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: start the splunk platform as the splunk user"
-echo "** $date_string - AW#1 step - splunk_core: start the splunk platform as the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: start the splunk platform as the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: start the splunk platform as the splunk user" >> ~/debug.txt
 splunkStatus="$(sudo -H -u splunk bash -c "/opt/splunk/bin/splunk status" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 splunkStatus="$(cat /tmp/k8s_output.txt | grep "splunkd" | awk '{print $3}')"; sleep 1
@@ -88,8 +91,8 @@ fi
 
 # start minikube as the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - minikube: start minikube as the splunk user"
-echo "** $date_string - AW#1 step - minikube: start minikube as the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - minikube: start minikube as the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - minikube: start minikube as the splunk user" >> ~/debug.txt
 minikubeStatus="$(sudo -H -u splunk bash -c "minikube status" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 minikubeStatus="$(cat /tmp/k8s_output.txt | grep -e "^host" -e "^kubelet" -e "^apiserver" -e "^kubeconfig" | awk '{print $2}' | tr -d '\n')"; sleep 1
@@ -109,8 +112,8 @@ fi
 
 # update the values.yaml file for metrics collection
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - otel: update the values.yaml file for metrics collection"
-echo "** $date_string - AW#1 step - otel: update the values.yaml file for metrics collection" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file for metrics collection"
+echo "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file for metrics collection" >> ~/debug.txt
 cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml | sed -e "s/  metricsIndex: \"\"/  metricsIndex: \"k8s_ws_metrics\"/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1; sleep 1
 cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1 | sed -e "s/  metricsEnabled: false/  metricsEnabled: true/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_2; sleep 1
 rm ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml; sleep 1
@@ -124,8 +127,8 @@ fi
 
 # update the values.yaml file for trace collection
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - otel: update the values.yaml file for trace collection"
-echo "** $date_string - AW#1 step - otel: update the values.yaml file for trace collection" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file for trace collection"
+echo "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file for trace collection" >> ~/debug.txt
 cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml | sed -e "s/  tracesIndex: \"\"/  tracesIndex: \"k8s_ws_petclinic_traces\"/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1; sleep 1
 cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1 | sed -e "s/  tracesEnabled: false/  tracesEnabled: true/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_2; sleep 1
 rm ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml; sleep 1
@@ -139,8 +142,8 @@ fi
 
 # copy the k8s_workshop and petclinic directory to the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - otel: copy the k8s_otel directory to the splunk user"
-echo "** $date_string - AW#1 step - otel: copy the k8s_otel directory to the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: copy the k8s_otel directory to the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - otel: copy the k8s_otel directory to the splunk user" >> ~/debug.txt
 rm -rf /home/splunk/k8s_workshop/k8s_otel; sleep 1
 sudo cp -rf ~/k8s_workshop/k8s_otel /home/splunk/k8s_workshop/k8s_otel; sleep 1
 if [ $? = 0 ]; then
@@ -152,8 +155,8 @@ fi
 
 # perform a helm dependency update
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - otel: perform a helm dependency update"
-echo "** $date_string - AW#1 step - otel: perform a helm dependency update" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: perform a helm dependency update"
+echo "** $date_string - $WORKSHOP_NUM step - otel: perform a helm dependency update" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); cd ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector; helm dependency update" &> /tmp/k8s_output.txt)"; sleep 10
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "Deleting" | awk '{print $1}')"; sleep 1
@@ -165,8 +168,8 @@ fi
 
 # upgrade the otel collector using helm
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - otel: upgrade the otel collector using helm"
-echo "** $date_string - AW#1 step - otel: upgrade the otel collector using helm" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: upgrade the otel collector using helm"
+echo "** $date_string - $WORKSHOP_NUM step - otel: upgrade the otel collector using helm" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); cd ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector; helm upgrade $WS_USER-k8s-ws -f values.yaml ." &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "STATUS:" | awk '{print $2}')"; sleep 1
@@ -185,8 +188,8 @@ fi
 
 # delete current petclinic app in kubernetes as the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - petclinic: delete current petclinic app in kubernetes as the splunk user"
-echo "** $date_string - AW#1 step - petclinic: delete current petclinic app in kubernetes as the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: delete current petclinic app in kubernetes as the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: delete current petclinic app in kubernetes as the splunk user" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); kubectl delete -f ~/k8s_workshop/petclinic/k8s_deploy/$WS_USER-petclinic-k8s-manifest.yml" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | awk '{print $3}' | tr -d '\n')"; sleep 1
@@ -198,8 +201,8 @@ fi
 
 # make the directory for JVM auto instrumentation library
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - otel: make the directory for JVM auto instrumentation library"
-echo "** $date_string - AW#1 step - otel: make the directory for JVM auto instrumentation library" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: make the directory for JVM auto instrumentation library"
+echo "** $date_string - $WORKSHOP_NUM step - otel: make the directory for JVM auto instrumentation library" >> ~/debug.txt
 mkdir -p ~/k8s_workshop/petclinic/spring-petclinic/target/splunk; sleep 1
 if [ $? = 0 ]; then
 echo " .... done"
@@ -209,8 +212,8 @@ fi
 
 # download the latest splunk otel JVM auto instrumentation library
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - otel: download the latest splunk otel JVM auto instrumentation library"
-echo "** $date_string - AW#1 step - otel: download the latest splunk otel JVM auto instrumentation library" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: download the latest splunk otel JVM auto instrumentation library"
+echo "** $date_string - $WORKSHOP_NUM step - otel: download the latest splunk otel JVM auto instrumentation library" >> ~/debug.txt
 result="$(curl -L https://github.com/signalfx/splunk-otel-java/releases/latest/download/splunk-otel-javaagent.jar -o ~/k8s_workshop/petclinic/spring-petclinic/target/splunk/splunk-otel-javaagent.jar &> /tmp/k8s_output.txt)"
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | tail -1 | sed -e 's/\r/\n/g;' | tail -1 | awk '{print $3}')"; sleep 1
@@ -222,8 +225,8 @@ fi
 
 # create dockerfile in petclinic target directory
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - petclinic: create dockerfile in petclinic target directory"
-echo "** $date_string - AW#1 step - petclinic: create dockerfile in petclinic target directory" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: create dockerfile in petclinic target directory"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: create dockerfile in petclinic target directory" >> ~/debug.txt
 sudo tee ~/k8s_workshop/petclinic/spring-petclinic/target/Dockerfile <<EOF >> ~/debug.txt
 # syntax=docker/dockerfile:1
 
@@ -248,8 +251,8 @@ echo " .... done"
 
 # copy the k8s_workshop and petclinic directory to the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user"
-echo "** $date_string - AW#1 step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user" >> ~/debug.txt
 sudo rm -rf /home/splunk/k8s_workshop/petclinic/*
 sudo cp -rf ~/k8s_workshop/petclinic/* /home/splunk/k8s_workshop/petclinic; sleep 1
 if [ $? = 0 ]; then
@@ -261,8 +264,8 @@ fi
 
 # pause for 1 minute(s) to allow petclinic container deletion
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - petclinic: pause for 1 minute(s) to allow petclinic container deletion"
-echo "** $date_string - AW#1 step - petclinic: pause for 1 minute(s) to allow petclinic container deletion" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: pause for 1 minute(s) to allow petclinic container deletion"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: pause for 1 minute(s) to allow petclinic container deletion" >> ~/debug.txt
 sleep 60
 if [ $? = 0 ]; then
 echo " .... done"
@@ -272,8 +275,8 @@ fi
 
 # delete the old container from the minikube docker registry
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - petclinic: delete the old container from the minikube docker registry"
-echo "** $date_string - AW#1 step - petclinic: delete the old container from the minikube docker registry" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: delete the old container from the minikube docker registry"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: delete the old container from the minikube docker registry" >> ~/debug.txt
 container_id="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); docker images" 2>&1 | grep "petclinic-otel" | awk '{print $3}')"; sleep 1
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); docker rmi -f $container_id" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
@@ -286,8 +289,8 @@ fi
 
 # build the petclinic docker image into the minikube docker registry
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - petclinic: build the petclinic docker image into the minikube docker registry"
-echo "** $date_string - AW#1 step - petclinic: build the petclinic docker image into the minikube docker registry" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: build the petclinic docker image into the minikube docker registry"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: build the petclinic docker image into the minikube docker registry" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); cd ~/k8s_workshop/petclinic/spring-petclinic/target; docker build --tag $WS_USER/petclinic-otel:v1 ." &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "Successfully built" | awk '{print $2}')"; sleep 1
@@ -299,8 +302,8 @@ fi
 
 # deploy the petclinic app in kubernetes as the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - petclinic: deploy the petclinic app in kubernetes as the splunk user"
-echo "** $date_string - AW#1 step - petclinic: deploy the petclinic app in kubernetes as the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: deploy the petclinic app in kubernetes as the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: deploy the petclinic app in kubernetes as the splunk user" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); kubectl apply -f ~/k8s_workshop/petclinic/k8s_deploy/$WS_USER-petclinic-k8s-manifest.yml" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | awk '{print $2}' | tr -d '\n')"; sleep 1
@@ -324,8 +327,8 @@ fi
 
 # update the app.conf file in the k8s workshop app
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: update the app.conf file in the k8s workshop app"
-echo "** $date_string - AW#1 step - splunk_core: update the app.conf file in the k8s workshop app" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: update the app.conf file in the k8s workshop app"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: update the app.conf file in the k8s workshop app" >> ~/debug.txt
 idValue="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/\_k8s_workshop_app/g')"
 app_name="$(echo $WS_USER-_k8s_workshop_app | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"
 sudo tee ~/k8s_workshop/splunk_app/$app_name/default/app.conf <<EOF >> ~/debug.txt
@@ -358,8 +361,8 @@ echo " .... done"
 
 # create a props.conf file for the k8s workshop app for index redirection
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: create a props.conf file for the k8s workshop app for index redirection"
-echo "** $date_string - AW#1 step - splunk_core: create a props.conf file for the k8s workshop app for index redirection" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: create a props.conf file for the k8s workshop app for index redirection"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: create a props.conf file for the k8s workshop app for index redirection" >> ~/debug.txt
 prop1="$(echo "TRANSFORMS-$WS_USER-_changeidxandst = $WS_USER-_change_st,$WS_USER-_change_idx" | sed -e 's/-_changeidxandst/\_changeidxandst/g' | sed -e 's/-_change_st,/\_change_st,/g' | sed -e 's/-_change_idx/\_change_idx/g')"
 prop2="$(echo "TRANSFORMS-$WS_USER-_changemetricidx = $WS_USER-_change_metric_idx" | sed -e 's/-_changemetricidx/\_changemetricidx/g' | sed -e 's/-_change_metric_idx/\_change_metric_idx,/g')"
 app_name="$(echo $WS_USER-_k8s_workshop_app | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"
@@ -374,8 +377,8 @@ echo " .... done"
 
 # create a transforms.conf file for the k8s workshop app for index redirection
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: create a transforms.conf file for the k8s workshop app for index redirection"
-echo "** $date_string - AW#1 step - splunk_core: create a transforms.conf file for the k8s workshop app for index redirection" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: create a transforms.conf file for the k8s workshop app for index redirection"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: create a transforms.conf file for the k8s workshop app for index redirection" >> ~/debug.txt
 stanza1="$(echo "[$WS_USER-_change_st]" | sed -e 's/-_change_st/\_change_st/g')"
 stanza2="$(echo "[$WS_USER-_change_idx]" | sed -e 's/-_change_idx/\_change_idx/g')"
 stanza3="$(echo "[$WS_USER-_change_metric_idx]" | sed -e 's/-_change_metric_idx/\_change_metric_idx/g')"
@@ -415,8 +418,8 @@ echo " .... done"
 
 # tar and compress k8s workshop app
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: tar and compress k8s workshop app"
-echo "** $date_string - AW#1 step - splunk_core: tar and compress k8s workshop app" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: tar and compress k8s workshop app"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: tar and compress k8s workshop app" >> ~/debug.txt
 app_name="$(echo $WS_USER-_k8s_workshop_app | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"
 cd ~/k8s_workshop/splunk_app; sleep 1
 result="$(tar -czvf ~/k8s_workshop/splunk_app/$app_name.tar.gz $app_name/ &> /tmp/k8s_output.txt)"; sleep 1
@@ -430,8 +433,8 @@ fi
 
 # copy the k8s splunk app directory to the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: copy the k8s splunk app directory to the splunk user"
-echo "** $date_string - AW#1 step - splunk_core: copy the k8s splunk app directory to the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: copy the k8s splunk app directory to the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: copy the k8s splunk app directory to the splunk user" >> ~/debug.txt
 sudo cp -rf ~/k8s_workshop/splunk_app /home/splunk/k8s_workshop; sleep 1
 if [ $? = 0 ]; then
 sudo chown -R splunk:docker /home/splunk/k8s_workshop; sleep 1
@@ -442,8 +445,8 @@ fi
 
 # upgrade k8s workshop app
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: upgrade k8s workshop app"
-echo "** $date_string - AW#1 step - splunk_core: upgrade k8s workshop app" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: upgrade k8s workshop app"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: upgrade k8s workshop app" >> ~/debug.txt
 app_name="$(echo $WS_USER-_k8s_workshop_app | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"
 command_str="$(echo "/opt/splunk/bin/splunk install app ~/k8s_workshop/splunk_app/$app_name.tar.gz -update 1 -auth admin:\!spl8nk*")"
 result="$(sudo -H -u splunk bash -c "$command_str" &> /tmp/k8s_output.txt)"; sleep 1
@@ -465,8 +468,8 @@ fi
 
 # create the splunk_dashboard directory
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: create the splunk_dashboard directory"
-echo "** $date_string - AW#1 step - splunk_core: create the splunk_dashboard directory" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: create the splunk_dashboard directory"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: create the splunk_dashboard directory" >> ~/debug.txt
 mkdir -p ~/k8s_workshop/splunk_dashboard; sleep 1
 if [ $? = 0 ]; then
 echo " .... done"
@@ -476,8 +479,8 @@ fi
 
 # download the splunk apm trace dashboard
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: download the splunk apm trace dashboard"
-echo "** $date_string - AW#1 step - splunk_core: download the splunk apm trace dashboard" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: download the splunk apm trace dashboard"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: download the splunk apm trace dashboard" >> ~/debug.txt
 cd ~/k8s_workshop/splunk_dashboard; sleep 1
 result="$(wget https://github.com/gdcosta/splunk-apm-dashboard/raw/main/apm_traces_4.0.0.xml &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
@@ -490,8 +493,8 @@ fi
 
 # create a new splunk dashboard template via rest api
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: create a new splunk dashboard template via rest api"
-echo "** $date_string - AW#1 step - splunk_core: create a new splunk dashboard template via rest api" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: create a new splunk dashboard template via rest api"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: create a new splunk dashboard template via rest api" >> ~/debug.txt
 app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
 dash_name="$(echo "$WS_USER-_apm_dashboard" | sed -e 's/-_apm_dashboard/_apm_dashboard/g')"; sleep 1
 result="$(curl -k -u admin:\!spl8nk* https://$LOCAL_IP:8089/servicesNS/admin/$app_name/data/ui/views -d "name=$dash_name&eai:data=<dashboard><label>the_new_label</label></dashboard>" &> /tmp/k8s_output.txt)"; sleep 1
@@ -505,8 +508,8 @@ fi
 
 # update splunk dashboard template permissions via rest api
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: update splunk dashboard template permissions via rest api"
-echo "** $date_string - AW#1 step - splunk_core: update splunk dashboard template permissions via rest api" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: update splunk dashboard template permissions via rest api"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: update splunk dashboard template permissions via rest api" >> ~/debug.txt
 app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
 dash_name="$(echo "$WS_USER-_apm_dashboard" | sed -e 's/-_apm_dashboard/_apm_dashboard/g')"; sleep 1
 result="$(curl -k -u admin:\!spl8nk* https://$LOCAL_IP:8089/servicesNS/admin/$app_name/data/ui/views/$dash_name/acl -d owner=admin -d perms.read=* -d sharing=app -d perms.write=admin,power &> /tmp/k8s_output.txt)"; sleep 1
@@ -520,8 +523,8 @@ fi
 
 # update the physical dashboard xml file
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: update the physical dashboard xml file"
-echo "** $date_string - AW#1 step - splunk_core: update the physical dashboard xml file" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: update the physical dashboard xml file"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: update the physical dashboard xml file" >> ~/debug.txt
 app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
 dash_name="$(echo "$WS_USER-_apm_dashboard" | sed -e 's/-_apm_dashboard/_apm_dashboard/g')"; sleep 1
 cd ~/k8s_workshop/splunk_dashboard; sleep 1
@@ -539,8 +542,8 @@ fi
 
 # download the splunk metrics dashboard
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: download the splunk metrics dashboard"
-echo "** $date_string - AW#1 step - splunk_core: download the splunk metrics dashboard" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: download the splunk metrics dashboard"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: download the splunk metrics dashboard" >> ~/debug.txt
 cd ~/k8s_workshop/splunk_dashboard; sleep 1
 result="$(wget https://github.com/gdcosta/splunk-apm-dashboard/raw/main/k8s_metrics_dashboard.xml &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
@@ -553,8 +556,8 @@ fi
 
 # create a new splunk dashboard template via rest api
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: create a new splunk dashboard template via rest api"
-echo "** $date_string - AW#1 step - splunk_core: create a new splunk dashboard template via rest api" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: create a new splunk dashboard template via rest api"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: create a new splunk dashboard template via rest api" >> ~/debug.txt
 app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
 dash_name="$(echo "$WS_USER-_k8s_metrics_dashboard" | sed -e 's/-_k8s_metrics_dashboard/_k8s_metrics_dashboard/g')"; sleep 1
 result="$(curl -k -u admin:\!spl8nk* https://$LOCAL_IP:8089/servicesNS/admin/$app_name/data/ui/views -d "name=$dash_name&eai:data=<dashboard><label>the_new_label</label></dashboard>" &> /tmp/k8s_output.txt)"; sleep 1
@@ -568,8 +571,8 @@ fi
 
 # update splunk dashboard template permissions via rest api
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: update splunk dashboard template permissions via rest api"
-echo "** $date_string - AW#1 step - splunk_core: update splunk dashboard template permissions via rest api" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: update splunk dashboard template permissions via rest api"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: update splunk dashboard template permissions via rest api" >> ~/debug.txt
 app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
 dash_name="$(echo "$WS_USER-_k8s_metrics_dashboard" | sed -e 's/-_k8s_metrics_dashboard/_k8s_metrics_dashboard/g')"; sleep 1
 result="$(curl -k -u admin:\!spl8nk* https://$LOCAL_IP:8089/servicesNS/admin/$app_name/data/ui/views/$dash_name/acl -d owner=admin -d perms.read=* -d sharing=app -d perms.write=admin,power &> /tmp/k8s_output.txt)"; sleep 1
@@ -583,8 +586,8 @@ fi
 
 # update the physical dashboard xml file
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: update the physical dashboard xml file"
-echo "** $date_string - AW#1 step - splunk_core: update the physical dashboard xml file" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: update the physical dashboard xml file"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: update the physical dashboard xml file" >> ~/debug.txt
 app_name="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"; sleep 1
 dash_name="$(echo "$WS_USER-_k8s_metrics_dashboard" | sed -e 's/-_k8s_metrics_dashboard/_k8s_metrics_dashboard/g')"; sleep 1
 cd ~/k8s_workshop/splunk_dashboard; sleep 1
@@ -606,8 +609,8 @@ fi
 
 # restart the splunk platform to load new dashboard
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - splunk_core: restart the splunk platform to load new dashboard"
-echo "** $date_string - AW#1 step - splunk_core: restart the splunk platform to load new dashboard" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: restart the splunk platform to load new dashboard"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: restart the splunk platform to load new dashboard" >> ~/debug.txt
 command_str="$(echo '/opt/splunk/bin/splunk restart')"
 result="$(sudo -H -u splunk bash -c "$command_str" &> /tmp/k8s_output.txt)"; sleep 5
 cat /tmp/k8s_output.txt >> ~/debug.txt
@@ -620,8 +623,8 @@ fi
 
 # copy the k8s_workshop and petclinic directory to the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#1 step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user"
-echo "** $date_string - AW#1 step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user" >> ~/debug.txt
 sudo cp -rf ~/k8s_workshop/splunk_dashboard /home/splunk/k8s_workshop; sleep 1
 if [ $? = 0 ]; then
 sudo chown -R splunk:docker /home/splunk/k8s_workshop; sleep 1
