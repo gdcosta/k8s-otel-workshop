@@ -41,12 +41,15 @@
 #      - Configure Splunk RUM capabilities to Splunk Observability Cloud
 #
 
+# Global variables
+export WORKSHOP_NUM="AW#2"
+
 #
 # setup - environment variable setup
 #
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - os: set our workshop variables"
-echo "** $date_string - AW#2 step - os: set our workshop variables" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - os: set our workshop variables"
+echo "** $date_string - $WORKSHOP_NUM step - os: set our workshop variables" >> ~/debug.txt
 export AMI_INDEX="$(hostname | sed -e "s/k8shost//g;")"
 export WS_USER=$(echo "user$AMI_INDEX")
 export PUBLIC_IP=$(ec2metadata --public-ipv4)
@@ -56,8 +59,8 @@ echo " .... done"
 
 # make sure we are in our home directory
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - os: change to home directory"
-echo "** $date_string - AW#2 step - os: change to home directory" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - os: change to home directory"
+echo "** $date_string - $WORKSHOP_NUM step - os: change to home directory" >> ~/debug.txt
 cd ~/; sleep 1
 if [ $? = 0 ]; then
 echo " .... done"
@@ -72,8 +75,8 @@ fi
 
 # start the splunk platform
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - splunk_core: start the splunk platform as the splunk user"
-echo "** $date_string - AW#2 step - splunk_core: start the splunk platform as the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: start the splunk platform as the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: start the splunk platform as the splunk user" >> ~/debug.txt
 splunkStatus="$(sudo -H -u splunk bash -c "/opt/splunk/bin/splunk status" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 splunkStatus="$(cat /tmp/k8s_output.txt | grep "splunkd" | awk '{print $3}')"; sleep 1
@@ -93,8 +96,8 @@ fi
 
 # start minikube as the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - minikube: start minikube as the splunk user"
-echo "** $date_string - AW#2 step - minikube: start minikube as the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - minikube: start minikube as the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - minikube: start minikube as the splunk user" >> ~/debug.txt
 minikubeStatus="$(sudo -H -u splunk bash -c "minikube status" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 minikubeStatus="$(cat /tmp/k8s_output.txt | grep -e "^host" -e "^kubelet" -e "^apiserver" -e "^kubeconfig" | awk '{print $2}' | tr -d '\n')"; sleep 1
@@ -119,8 +122,8 @@ fi
 
 # checking Splunk Observability Cloud environment variables
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - observability: checking Splunk Observability Cloud environment variables"
-echo "** $date_string - AW#2 step - observability: checking Splunk Observability Cloud environment variables" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - observability: checking Splunk Observability Cloud environment variables"
+echo "** $date_string - $WORKSHOP_NUM step - observability: checking Splunk Observability Cloud environment variables" >> ~/debug.txt
 if [ -z "$observability_realm" ]; then
 echo " ... \$observability_realm environment variable is not set ... exiting"
 exit 1
@@ -140,8 +143,8 @@ echo " .... done"
 
 # update the values.yaml file to configure otel collector to send data to Splunk Observability Cloud
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - otel: update the values.yaml file to configure otel collector to send data to Splunk Observability Cloud"
-echo "** $date_string - AW#2 step - otel: update the values.yaml file to configure otel collector to send data to Splunk Observability Cloud" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file to configure otel collector to send data to Splunk Observability Cloud"
+echo "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file to configure otel collector to send data to Splunk Observability Cloud" >> ~/debug.txt
 cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml | sed -e "s/  realm: \"\"/  realm: \"$observability_realm\"/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1; sleep 1
 cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1 | sed -e "s/  accessToken: \"\"/  accessToken: \"$observability_token\"/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_2; sleep 1
 rm ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml; sleep 1
@@ -155,8 +158,8 @@ fi
 
 # update the values.yaml file to configure AlwaysOn Profiling
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - otel: update the values.yaml file to configure AlwaysOn Profiling"
-echo "** $date_string - AW#2 step - otel: update the values.yaml file to configure AlwaysOn Profiling" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file to configure AlwaysOn Profiling"
+echo "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file to configure AlwaysOn Profiling" >> ~/debug.txt
 cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml | sed -e "s/  profilingEnabled: false/  profilingEnabled: true/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1; sleep 1
 rm ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml; sleep 1
 mv ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1 ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml; sleep 1
@@ -168,8 +171,8 @@ fi
 
 # copy the otel config directory to the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - otel: copy the otel config directory to the splunk user"
-echo "** $date_string - AW#2 step - otel: copy the otel config directory to the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: copy the otel config directory to the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - otel: copy the otel config directory to the splunk user" >> ~/debug.txt
 sudo rm -rf /home/splunk/k8s_workshop/k8s_otel; sleep 1
 sudo cp -rf ~/k8s_workshop/k8s_otel /home/splunk/k8s_workshop; sleep 1
 if [ $? = 0 ]; then
@@ -181,8 +184,8 @@ fi
 
 # perform a helm dependency update
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - otel: perform a helm dependency update"
-echo "** $date_string - AW#2 step - otel: perform a helm dependency update" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: perform a helm dependency update"
+echo "** $date_string - $WORKSHOP_NUM step - otel: perform a helm dependency update" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); cd ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector; helm dependency update" &> /tmp/k8s_output.txt)"; sleep 10
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "Deleting" | awk '{print $1}')"; sleep 1
@@ -194,8 +197,8 @@ fi
 
 # upgrade the otel collector using helm
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - otel: upgrade the otel collector using helm"
-echo "** $date_string - AW#2 step - otel: upgrade the otel collector using helm" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: upgrade the otel collector using helm"
+echo "** $date_string - $WORKSHOP_NUM step - otel: upgrade the otel collector using helm" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); cd ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector; helm upgrade $WS_USER-k8s-ws -f values.yaml ." &> /tmp/k8s_output.txt)"; sleep 5
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "STATUS:" | awk '{print $2}')"; sleep 1
@@ -213,8 +216,8 @@ fi
 
 # delete current petclinic app in kubernetes as the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: delete current petclinic app in kubernetes as the splunk user"
-echo "** $date_string - AW#2 step - petclinic: delete current petclinic app in kubernetes as the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: delete current petclinic app in kubernetes as the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: delete current petclinic app in kubernetes as the splunk user" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); kubectl delete -f ~/k8s_workshop/petclinic/k8s_deploy/$WS_USER-petclinic-k8s-manifest.yml" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | awk '{print $3}' | tr -d '\n')"; sleep 1
@@ -226,8 +229,8 @@ fi
 
 # create dockerfile in petclinic target directory
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: create dockerfile in petclinic target directory"
-echo "** $date_string - AW#2 step - petclinic: create dockerfile in petclinic target directory" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: create dockerfile in petclinic target directory"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: create dockerfile in petclinic target directory" >> ~/debug.txt
 sudo tee ~/k8s_workshop/petclinic/spring-petclinic/target/Dockerfile <<EOF >> ~/debug.txt
 # syntax=docker/dockerfile:1
 
@@ -252,8 +255,8 @@ echo " .... done"
 
 # copy the k8s_workshop and petclinic directory to the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user"
-echo "** $date_string - AW#2 step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: copy the k8s_workshop and petclinic directory to the splunk user" >> ~/debug.txt
 sudo rm -rf /home/splunk/k8s_workshop/petclinic/*
 sudo cp -rf ~/k8s_workshop/petclinic/* /home/splunk/k8s_workshop/petclinic; sleep 1
 if [ $? = 0 ]; then
@@ -265,8 +268,8 @@ fi
 
 # delete the old container from the minikube docker registry
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: delete the old container from the minikube docker registry"
-echo "** $date_string - AW#2 step - petclinic: delete the old container from the minikube docker registry" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: delete the old container from the minikube docker registry"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: delete the old container from the minikube docker registry" >> ~/debug.txt
 container_id="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); docker images" 2>&1 | grep "petclinic-otel" | awk '{print $3}')"; sleep 1
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); docker rmi -f $container_id" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
@@ -279,8 +282,8 @@ fi
 
 # build the petclinic docker image into the minikube docker registry
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: build the petclinic docker image into the minikube docker registry"
-echo "** $date_string - AW#2 step - petclinic: build the petclinic docker image into the minikube docker registry" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: build the petclinic docker image into the minikube docker registry"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: build the petclinic docker image into the minikube docker registry" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); cd ~/k8s_workshop/petclinic/spring-petclinic/target; docker build --tag $WS_USER/petclinic-otel:v1 ." &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "Successfully built" | awk '{print $2}')"; sleep 1
@@ -292,8 +295,8 @@ fi
 
 # deploy the petclinic app in kubernetes as the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: deploy the petclinic app in kubernetes as the splunk user"
-echo "** $date_string - AW#2 step - petclinic: deploy the petclinic app in kubernetes as the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: deploy the petclinic app in kubernetes as the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: deploy the petclinic app in kubernetes as the splunk user" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); kubectl apply -f ~/k8s_workshop/petclinic/k8s_deploy/$WS_USER-petclinic-k8s-manifest.yml" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | awk '{print $2}' | tr -d '\n')"; sleep 1
@@ -312,8 +315,8 @@ fi
 
 # RUM: make a copy of the original layout.html file from the petclinic app
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: RUM: make a copy of the original layout.html file from the petclinic app"
-echo "** $date_string - AW#2 step - petclinic: RUM: make a copy of the original layout.html file from the petclinic app" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: make a copy of the original layout.html file from the petclinic app"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: make a copy of the original layout.html file from the petclinic app" >> ~/debug.txt
 cp -p ~/k8s_workshop/petclinic/spring-petclinic/src/main/resources/templates/fragments/layout.html ~/k8s_workshop/petclinic/spring-petclinic/src/main/resources/templates/fragments/layout.html.orig; sleep 1
 if [ $? = 0 ]; then
 echo " .... done"
@@ -323,8 +326,8 @@ fi
 
 # RUM: update the layout.html files from the petclinic app to enable splunk observability rum capabilities
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: RUM: update the layout.html files from the petclinic app to enable splunk observability rum capabilities"
-echo "** $date_string - AW#2 step - petclinic: RUM: update the layout.html files from the petclinic app to enable splunk observability rum capabilities" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: update the layout.html files from the petclinic app to enable splunk observability rum capabilities"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: update the layout.html files from the petclinic app to enable splunk observability rum capabilities" >> ~/debug.txt
 cat ~/k8s_workshop/petclinic/spring-petclinic/src/main/resources/templates/fragments/layout.html | sed -e "s/<head>/<head>\n\n  <script src=\"https:\/\/cdn.signalfx.com\/o11y-gdi-rum\/latest\/splunk-otel-web.js\" crossorigin=\"anonymous\"><\/script>\n  <script>\n    SplunkRum.init({\n      beaconUrl: \"https:\/\/rum-ingest.$observability_realm.signalfx.com\/v1\/rum\",\n      rumAuth: \"$observability_rumToken\",\n      app: \"$WS_USER-k8s-petClinic-service\",\n      environment: \"$WS_USER-k8s-petclinic-deployment-env\"\n      });\n  <\/script>/g" > ~/k8s_workshop/petclinic/spring-petclinic/src/main/resources/templates/fragments/layout.html_1
 rm ~/k8s_workshop/petclinic/spring-petclinic/src/main/resources/templates/fragments/layout.html; sleep 1
 mv ~/k8s_workshop/petclinic/spring-petclinic/src/main/resources/templates/fragments/layout.html_1 ~/k8s_workshop/petclinic/spring-petclinic/src/main/resources/templates/fragments/layout.html; sleep 1
@@ -337,8 +340,8 @@ fi
 
 # RUM: use MAVEN to build a new petclinic package
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: RUM: use MAVEN to build a new petclinic package"
-echo "** $date_string - AW#2 step - petclinic: RUM: use MAVEN to build a new petclinic package" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: use MAVEN to build a new petclinic package"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: use MAVEN to build a new petclinic package" >> ~/debug.txt
 cd ~/k8s_workshop/petclinic/spring-petclinic
 result="$(./mvnw package &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
@@ -351,8 +354,8 @@ fi
 
 # RUM: delete current petclinic app in kubernetes as the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: delete current petclinic app in kubernetes as the splunk user"
-echo "** $date_string - AW#2 step - petclinic: delete current petclinic app in kubernetes as the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: delete current petclinic app in kubernetes as the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: delete current petclinic app in kubernetes as the splunk user" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); kubectl delete -f ~/k8s_workshop/petclinic/k8s_deploy/$WS_USER-petclinic-k8s-manifest.yml" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | awk '{print $3}' | tr -d '\n')"; sleep 1
@@ -364,8 +367,8 @@ fi
 
 # RUM: copy the petclinic app directory to the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: RUM: copy the petclinic app directory to the splunk user"
-echo "** $date_string - AW#2 step - petclinic: RUM: copy the petclinic app directory to the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: copy the petclinic app directory to the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: copy the petclinic app directory to the splunk user" >> ~/debug.txt
 sudo cp -rf ~/k8s_workshop/petclinic /home/splunk/k8s_workshop; sleep 1
 if [ $? = 0 ]; then
 sudo chown -R splunk:docker /home/splunk/k8s_workshop; sleep 1
@@ -377,8 +380,8 @@ fi
 
 # RUM: delete the old container from the minikube docker registry
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: RUM: delete the old container from the minikube docker registry"
-echo "** $date_string - AW#2 step - petclinic: RUM: delete the old container from the minikube docker registry" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: delete the old container from the minikube docker registry"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: delete the old container from the minikube docker registry" >> ~/debug.txt
 container_id="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); docker images" 2>&1 | grep "petclinic-otel" | awk '{print $3}')"; sleep 1
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); docker rmi -f $container_id" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
@@ -392,8 +395,8 @@ fi
 
 # RUM: build the petclinic docker image into the minikube docker registry
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: RUM: build the petclinic docker image into the minikube docker registry"
-echo "** $date_string - AW#2 step - petclinic: RUM: build the petclinic docker image into the minikube docker registry" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: build the petclinic docker image into the minikube docker registry"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: build the petclinic docker image into the minikube docker registry" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); cd ~/k8s_workshop/petclinic/spring-petclinic/target; docker build --tag $WS_USER/petclinic-otel:v1 ." &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "Successfully built" | awk '{print $2}')"; sleep 1
@@ -405,8 +408,8 @@ fi
 
 # deploy the petclinic app in kubernetes as the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: deploy the petclinic app in kubernetes as the splunk user"
-echo "** $date_string - AW#2 step - petclinic: deploy the petclinic app in kubernetes as the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: deploy the petclinic app in kubernetes as the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: deploy the petclinic app in kubernetes as the splunk user" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); kubectl apply -f ~/k8s_workshop/petclinic/k8s_deploy/$WS_USER-petclinic-k8s-manifest.yml" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | awk '{print $2}' | tr -d '\n')"; sleep 1
@@ -418,7 +421,7 @@ fi
 
 # # stop minikube as the splunk user
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - minikube: stop minikube as the splunk user"
+# echo -n "** $date_string - $WORKSHOP_NUM step - minikube: stop minikube as the splunk user"
 # result="$(sudo -H -u splunk bash -c "minikube stop" 2>&1 | grep "node stopped" | awk '{print $4}')"; sleep 1
 # if [ $result = "stopped." ]; then
 # echo " .... done"
@@ -428,7 +431,7 @@ fi
 
 # # download jmeter libraries for browser tests - cmdrunner-2.3.jar
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - splunk_core: download jmeter libraries for browser tests - cmdrunner-2.3.jar"
+# echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: download jmeter libraries for browser tests - cmdrunner-2.3.jar"
 # cd ~/k8s_workshop/jmeter/apache-jmeter-5.5/lib; sleep 1
 # result="$(wget https://repo1.maven.org/maven2/kg/apc/cmdrunner/2.3/cmdrunner-2.3.jar 2>&1 | grep "^HTTP" | tail -1 | sed -e 's/^HTTP request sent, awaiting response... //g;' | awk '{print $1}')"; sleep 1
 # if [ $result = 200 ]; then
@@ -439,7 +442,7 @@ fi
 # 
 # # download jmeter libraries for browser tests - selenium-devtools-v113-4.9.1.jar
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - splunk_core: download jmeter libraries for browser tests - selenium-devtools-v113-4.9.1.jar"
+# echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: download jmeter libraries for browser tests - selenium-devtools-v113-4.9.1.jar"
 # cd ~/k8s_workshop/jmeter/apache-jmeter-5.5/lib; sleep 1
 # result="$(wget https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-devtools-v113/4.9.1/selenium-devtools-v113-4.9.1.jar 2>&1 | grep "^HTTP" | tail -1 | sed -e 's/^HTTP request sent, awaiting response... //g;' | awk '{print $1}')"; sleep 1
 # if [ $result = 200 ]; then
@@ -450,7 +453,7 @@ fi
 # 
 # # download jmeter libraries for browser tests - selenium-manager-4.8.3.jar
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - splunk_core: download jmeter libraries for browser tests - selenium-manager-4.8.3.jar"
+# echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: download jmeter libraries for browser tests - selenium-manager-4.8.3.jar"
 # cd ~/k8s_workshop/jmeter/apache-jmeter-5.5/lib; sleep 1
 # result="$(wget https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-manager/4.8.3/selenium-manager-4.8.3.jar 2>&1 | grep "^HTTP" | tail -1 | sed -e 's/^HTTP request sent, awaiting response... //g;' | awk '{print $1}')"; sleep 1
 # if [ $result = 200 ]; then
@@ -461,7 +464,7 @@ fi
 # 
 # # download jmeter libraries for browser tests - jmeter-plugins-manager-1.9.jar
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - splunk_core: download jmeter libraries for browser tests - jmeter-plugins-manager-1.9.jar"
+# echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: download jmeter libraries for browser tests - jmeter-plugins-manager-1.9.jar"
 # cd ~/k8s_workshop/jmeter/apache-jmeter-5.5/lib/ext; sleep 1
 # result="$(wget https://repo1.maven.org/maven2/kg/apc/jmeter-plugins-manager/1.9/jmeter-plugins-manager-1.9.jar 2>&1 | grep "^HTTP" | tail -1 | sed -e 's/^HTTP request sent, awaiting response... //g;' | awk '{print $1}')"; sleep 1
 # if [ $result = 200 ]; then
@@ -472,7 +475,7 @@ fi
 # 
 # # build Plugins Manager
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - splunk_core: build Plugins Manager"
+# echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: build Plugins Manager"
 # cd ~/k8s_workshop/jmeter/apache-jmeter-5.5; sleep 1
 # java -cp lib/ext/jmeter-plugins-manager-1.9.jar org.jmeterplugins.repository.PluginManagerCMDInstaller; sleep 1
 # if [ $? = 0 ]; then
@@ -483,7 +486,7 @@ fi
 # 
 # # install selenium WebDriver via jmeter Plugins Manager
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - splunk_core: install selenium WebDriver via jmeter Plugins Manager"
+# echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: install selenium WebDriver via jmeter Plugins Manager"
 # cd ~/k8s_workshop/jmeter/apache-jmeter-5.5/bin; sleep 1
 # ; sleep 1
 # result="$(./PluginsManagerCMD.sh install jpgc-webdriver 2>&1 | grep "Starting JMeter Plugins modifications" | awk '{print $5}')"; sleep 1
@@ -495,7 +498,7 @@ fi
 # 
 # # make the directory for all chrome related downloads
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - splunk_core: make the directory for all chrome related downloads"
+# echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: make the directory for all chrome related downloads"
 # mkdir -p ~/k8s_workshop/jmeter/chrome; sleep 1
 # if [ $? = 0 ]; then
 # echo " .... done"
@@ -505,7 +508,7 @@ fi
 # 
 # # download chrome driver
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - splunk_core: download chrome driver"
+# echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: download chrome driver"
 # cd ~/k8s_workshop/jmeter/chrome; sleep 1
 # result="$(wget https://chromedriver.storage.googleapis.com/113.0.5672.63/chromedriver_linux64.zip 2>&1 | grep "^HTTP" | tail -1 | sed -e 's/^HTTP request sent, awaiting response... //g;' | awk '{print $1}')"; sleep 1
 # if [ $result = 200 ]; then
@@ -516,7 +519,7 @@ fi
 # 
 # # unzip chrome driver
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - splunk_core: unzip chrome driver"
+# echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: unzip chrome driver"
 # cd ~/k8s_workshop/jmeter/chrome; sleep 1
 # result="$(unzip chromedriver_linux64.zip 2>&1 | grep "inflating: chromedriver" | awk '{print $2}')"; sleep 1
 # if [ $result = "chromedriver" ]; then
@@ -528,7 +531,7 @@ fi
 # 
 # # move chromedriver to /usr/local/bin
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - splunk_core: move chromedriver to /usr/local/bin"
+# echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: move chromedriver to /usr/local/bin"
 # cd ~/k8s_workshop/jmeter/chrome; sleep 1
 # chmod 755 ./chromedriver; sleep 1
 # sudo mv ./chromedriver /usr/local/bin/chromedriver; sleep 1
@@ -541,7 +544,7 @@ fi
 
 # # RUM: move chromedriver to /usr/local/bin
 # date_string="$(date)"
-# echo -n "** $date_string - AW#2 step - splunk_core: RUM: move chromedriver to /usr/local/bin"
+# echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: RUM: move chromedriver to /usr/local/bin"
 # cd ~/k8s_workshop/jmeter/apache-jmeter-5.5/bin; sleep 1
 # sudo mv ./chromedriver /usr/local/bin/chromedriver; sleep 1
 # sudo chown splunk:splunk /usr/local/bin/chromedriver; sleep 1
@@ -553,8 +556,8 @@ fi
 
 # RUM: download jmeter browser test plan - developed by gerry dcosta
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - splunk_core: RUM: download jmeter browser test plan - developed by gerry dcosta"
-echo "** $date_string - AW#2 step - splunk_core: RUM: download jmeter browser test plan - developed by gerry dcosta" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: RUM: download jmeter browser test plan - developed by gerry dcosta"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: RUM: download jmeter browser test plan - developed by gerry dcosta" >> ~/debug.txt
 cd ~/k8s_workshop/jmeter/apache-jmeter-5.5/; sleep 1
 result="$(wget https://raw.githubusercontent.com/gdcosta/jmeter-browser-test/main/petclinic_browser_test.jmx &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
@@ -567,8 +570,8 @@ fi
 
 # RUM: update the petclinic_browser_test.jmx file
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - jmeter: RUM: update the petclinic_browser_test.jmx file"
-echo "** $date_string - AW#2 step - jmeter: RUM: update the petclinic_browser_test.jmx file" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - jmeter: RUM: update the petclinic_browser_test.jmx file"
+echo "** $date_string - $WORKSHOP_NUM step - jmeter: RUM: update the petclinic_browser_test.jmx file" >> ~/debug.txt
 cat ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx | sed -e "s/            <stringProp name=\"Argument.value\">\${__P(url,http:\/\/<UBUNTU_EXTERNAL_IP>)}<\/stringProp>/            <stringProp name=\"Argument.value\">\${__P(url,http:\/\/$LOCAL_IP)}<\/stringProp>/g;" >  ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx_1; sleep 1
 rm ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx; sleep 1
 mv ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx_1 ~/k8s_workshop/jmeter/apache-jmeter-5.5/petclinic_browser_test.jmx; sleep 1
@@ -580,8 +583,8 @@ fi
 
 # RUM: copy the jmeter app directory to the splunk user
 date_string="$(date)"
-echo -n "** $date_string - AW#2 step - petclinic: RUM: copy the jmeter app directory to the splunk user"
-echo "** $date_string - AW#2 step - petclinic: RUM: copy the jmeter app directory to the splunk user" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: copy the jmeter app directory to the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - petclinic: RUM: copy the jmeter app directory to the splunk user" >> ~/debug.txt
 sudo rm -rf /home/splunk/k8s_workshop/jmeter/apache-jmeter-5.5; sleep 1
 sudo cp -rf ~/k8s_workshop/jmeter/apache-jmeter-5.5 /home/splunk/k8s_workshop/jmeter; sleep 1
 if [ $? = 0 ]; then
