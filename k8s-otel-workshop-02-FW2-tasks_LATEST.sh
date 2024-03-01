@@ -161,7 +161,7 @@ date_string="$(date)"
 echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: download the k8s workshop app from github"
 echo "** $date_string - $WORKSHOP_NUM step - splunk_core: download the k8s workshop app from github" >> ~/debug.txt
 cd ~/k8s_workshop/splunk_app; sleep 1
-result="$(wget https://github.com/gdcosta/k8s_workshop_app/raw/main/k8s_workshop_app.tar.gz &> /tmp/k8s_output.txt)"; sleep 1
+result="$(wget https://github.com/gdcosta/k8s_workshop_app/raw/3.0/k8s_workshop_app.tar.gz &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "^HTTP" | tail -1 | sed -e 's/^HTTP request sent, awaiting response... //g;' | awk '{print $1}')"; sleep 1
 if [ $result = 200 ]; then
