@@ -111,69 +111,6 @@ fi
 
 
 
-# update indexes.conf file to added three additional indexes
-date_string="$(date)"
-echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: update indexes.conf file to added three additional indexes"
-echo "** $date_string - $WORKSHOP_NUM step - splunk_core: update indexes.conf file to added three additional indexes" >> ~/debug.txt
-
-idValue="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/\_k8s_workshop_app/g')"
-app_name="$(echo $WS_USER-_k8s_workshop_app | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"
-
-sudo tee -a /opt/splunk/etc/apps/$app_name/local/indexes.conf <<EOF >> ~/debug.txt
-
-[k8s_ws_petclinic_traces]
-coldPath = \$SPLUNK_DB/k8s_ws_petclinic_traces/colddb
-enableDataIntegrityControl = 0
-enableTsidxReduction = 0
-homePath = \$SPLUNK_DB/k8s_ws_petclinic_traces/db
-maxTotalDataSizeMB = 1024
-thawedPath = \$SPLUNK_DB/k8s_ws_petclinic_traces/thaweddb
-frozenTimePeriodInSecs = 432000
-
-[k8s_ws_metrics]
-coldPath = \$SPLUNK_DB/k8s_ws_metrics/colddb
-datatype = metric
-enableDataIntegrityControl = 0
-enableTsidxReduction = 0
-homePath = \$SPLUNK_DB/k8s_ws_metrics/db
-maxTotalDataSizeMB = 1024
-metric.timestampResolution = ms
-thawedPath = \$SPLUNK_DB/k8s_ws_metrics/thaweddb
-frozenTimePeriodInSecs = 432000
-
-[k8s_ws_petclinic_metrics]
-coldPath = \$SPLUNK_DB/k8s_ws_petclinic_metrics/colddb
-datatype = metric
-enableDataIntegrityControl = 0
-enableTsidxReduction = 0
-homePath = \$SPLUNK_DB/k8s_ws_petclinic_metrics/db
-maxTotalDataSizeMB = 1024
-metric.timestampResolution = ms
-thawedPath = \$SPLUNK_DB/k8s_ws_petclinic_metrics/thaweddb
-frozenTimePeriodInSecs = 432000
-EOF
-sleep 1
-sudo chown -R splunk:docker /opt/splunk/etc/apps/$app_name; sleep 1
-echo " .... done"
-
-# restart the splunk platform to reload indexes.conf file
-date_string="$(date)"
-echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: restart the splunk platform to load server.conf file"
-echo "** $date_string - $WORKSHOP_NUM step - splunk_core: restart the splunk platform to load server.conf file" >> ~/debug.txt
-command_str="$(echo '/opt/splunk/bin/splunk restart')"
-result="$(sudo -H -u splunk bash -c "$command_str" &> /tmp/k8s_output.txt)"; sleep 5
-cat /tmp/k8s_output.txt >> ~/debug.txt
-result="$(cat /tmp/k8s_output.txt | grep "^Waiting for web server" | awk '{print $10}')"; sleep 1
-if [ $result = "Done" ]; then
-echo " .... done"
-else
-echo " .... failed"
-fi
-
-
-
-
-
 
 # update the values.yaml file for metrics collection
 date_string="$(date)"
@@ -423,6 +360,54 @@ EOF
 sleep 1
 sudo chown -R ubuntu:docker ~/k8s_workshop; sleep 1
 echo " .... done"
+
+
+# update indexes.conf file to added three additional indexes
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: update indexes.conf file to added three additional indexes"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: update indexes.conf file to added three additional indexes" >> ~/debug.txt
+
+idValue="$(echo "$WS_USER-_k8s_workshop_app" | sed -e 's/-_k8s_workshop_app/\_k8s_workshop_app/g')"
+app_name="$(echo $WS_USER-_k8s_workshop_app | sed -e 's/-_k8s_workshop_app/_k8s_workshop_app/g')"
+
+sudo tee -a ~/k8s_workshop/splunk_app/$app_name/local/indexes.conf <<EOF >> ~/debug.txt
+
+[k8s_ws_petclinic_traces]
+coldPath = \$SPLUNK_DB/k8s_ws_petclinic_traces/colddb
+enableDataIntegrityControl = 0
+enableTsidxReduction = 0
+homePath = \$SPLUNK_DB/k8s_ws_petclinic_traces/db
+maxTotalDataSizeMB = 1024
+thawedPath = \$SPLUNK_DB/k8s_ws_petclinic_traces/thaweddb
+frozenTimePeriodInSecs = 432000
+
+[k8s_ws_metrics]
+coldPath = \$SPLUNK_DB/k8s_ws_metrics/colddb
+datatype = metric
+enableDataIntegrityControl = 0
+enableTsidxReduction = 0
+homePath = \$SPLUNK_DB/k8s_ws_metrics/db
+maxTotalDataSizeMB = 1024
+metric.timestampResolution = ms
+thawedPath = \$SPLUNK_DB/k8s_ws_metrics/thaweddb
+frozenTimePeriodInSecs = 432000
+
+[k8s_ws_petclinic_metrics]
+coldPath = \$SPLUNK_DB/k8s_ws_petclinic_metrics/colddb
+datatype = metric
+enableDataIntegrityControl = 0
+enableTsidxReduction = 0
+homePath = \$SPLUNK_DB/k8s_ws_petclinic_metrics/db
+maxTotalDataSizeMB = 1024
+metric.timestampResolution = ms
+thawedPath = \$SPLUNK_DB/k8s_ws_petclinic_metrics/thaweddb
+frozenTimePeriodInSecs = 432000
+EOF
+sleep 1
+sudo chown -R ubuntu:docker ~/k8s_workshop; sleep 1
+echo " .... done"
+
+
 
 # create a props.conf file for the k8s workshop app for index redirection
 date_string="$(date)"
