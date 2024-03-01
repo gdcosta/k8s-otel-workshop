@@ -307,6 +307,9 @@ echo " .... failed"
 fi
 
 
+
+
+
 # LOG OBSERVER: update logging format in application.properties file of the petclinic source to include trace and span info
 date_string="$(date)"
 echo -n "** $date_string - $WORKSHOP_NUM step - petclinic: update logging format in application.properties file of the petclinic source to include trace and span info"
@@ -447,8 +450,8 @@ echo " .... done"
 
 # LOG OBSERVER: enable authentication tokens in splunk enterprise
 date_string="$(date)"
-echo -n "** $date_string - $WORKSHOP_NUM step - core: enable authentication tokens in splunk enterprise"
-echo "** $date_string - $WORKSHOP_NUM step - core: enable authentication tokens in splunk enterprise" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: enable authentication tokens in splunk enterprise"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: enable authentication tokens in splunk enterprise" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "curl -k -u admin:\!spl8nk* https://localhost:8089/services/admin/token-auth/tokens_auth -d disabled=false" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "disabled" | awk -F\< '{print $2}' | awk -F\> '{print $2}')"; sleep 1
@@ -460,8 +463,8 @@ fi
 
 # LOG OBSERVER: create log observer connect role in splunk enterprise
 date_string="$(date)"
-echo -n "** $date_string - $WORKSHOP_NUM step - core: create log observer connect role in splunk enterprise"
-echo "** $date_string - $WORKSHOP_NUM step - core: create log observer connect role in splunk enterprise" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: create log observer connect role in splunk enterprise"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: create log observer connect role in splunk enterprise" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "curl -k -u admin:\!spl8nk* https://localhost:8089/services/authorization/roles -d name=logobserver-connect-role -d cumulativeRTSrchJobsQuota=0 -d cumulativeSrchJobsQuota=40 -d rtSrchJobsQuota=0 -d srchDiskQuota=1000 -d srchJobsQuota=40 -d srchTimeEarliest=7776000 -d srchTimeWin=2592000 -d capabilities=edit_tokens_own -d capabilities=list_tokens_own -d capabilities=search -d srchIndexesAllowed=k8s_ws_logs -d srchIndexesAllowed=k8s_ws_petclinic_logs" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "\<id\>" | grep "logobserver-connect-role" | awk -F\< '{print $2}' | awk -F\> '{print $2}' | awk -F\/ '{print $NF}')"; sleep 1
@@ -473,8 +476,8 @@ fi
 
 # LOG OBSERVER: create log observer connect system account in splunk enterprise
 date_string="$(date)"
-echo -n "** $date_string - $WORKSHOP_NUM step - core: create log observer connect system account in splunk enterprise"
-echo "** $date_string - $WORKSHOP_NUM step - core: create log observer connect system account in splunk enterprise" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: create log observer connect system account in splunk enterprise"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: create log observer connect system account in splunk enterprise" >> ~/debug.txt
 result="$(sudo -H -u splunk bash -c "curl -k -u admin:\!spl8nk* https://localhost:8089/services/authentication/users -d name=logobserver-connect-user -d password=\!spl8nk* -d roles=logobserver-connect-role -d force-change-pass=false -d realname=\"Log Observer Connect\"" &> /tmp/k8s_output.txt)"; sleep 1
 cat /tmp/k8s_output.txt >> ~/debug.txt
 result="$(cat /tmp/k8s_output.txt | grep "\<id\>" | grep "logobserver-connect-user" | awk -F\< '{print $2}' | awk -F\> '{print $2}' | awk -F\/ '{print $NF}')"; sleep 1
@@ -487,8 +490,8 @@ fi
 
 # LOG OBSERVER: update server.conf file in splunk enterprise to use ssl certs
 date_string="$(date)"
-echo -n "** $date_string - $WORKSHOP_NUM step - core: update server.conf file in splunk enterprise to use ssl certs"
-echo "** $date_string - $WORKSHOP_NUM step - core: update server.conf file in splunk enterprise to use ssl certs" >> ~/debug.txt
+echo -n "** $date_string - $WORKSHOP_NUM step - splunk_core: update server.conf file in splunk enterprise to use ssl certs"
+echo "** $date_string - $WORKSHOP_NUM step - splunk_core: update server.conf file in splunk enterprise to use ssl certs" >> ~/debug.txt
 newServerName="$(curl https://ipinfo.io/ip 2>/dev/null | nslookup | grep "name = " | awk '{print $4}' | sed -e 's/\.$//' | sed "s/\./_/" | awk -F_ '{print "'$(hostname)'."$2}')"
 cat /opt/splunk/etc/system/local/server.conf | sed -e "s/^serverName = k8.*/serverName = $newServerName/" > /opt/splunk/etc/system/local/server.conf_1; sleep 1
 cat /opt/splunk/etc/system/local/server.conf_1 | sed -e "s/^sslPassword = .*$/serverCert = \/opt\/splunk\/etc\/auth\/sloccerts\/myFinalCert.pem\nrequireClientCert = false\ncliVerifyServerName = false/" > /opt/splunk/etc/system/local/server.conf_2; sleep 1
