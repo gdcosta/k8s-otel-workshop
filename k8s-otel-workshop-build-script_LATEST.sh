@@ -7,7 +7,7 @@
 # author:  Gerry D'Costa
 # title:   Staff Solutions Engineer, Splunk
 #
-# version: 1.0.0
+# version: 3.0.0
 
 
 date_string="$(date)"
