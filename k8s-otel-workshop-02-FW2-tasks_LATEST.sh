@@ -629,6 +629,80 @@ else
 echo " .... failed"
 fi
 
+
+
+
+
+# update the values.yaml file for agent memory increase
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file for agent memory increase"
+echo "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file for agent memory increase" >> ~/debug.txt
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml.tmp
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml | sed -z "s/      enabled_for: \[metrics\]\n\n  resources:\n    limits:\n      cpu: 200m\n      # This value is being used as a source for default memory_limiter processor configurations\n      memory: 500Mi/      enabled_for: \[metrics\]\n\n  resources:\n    limits:\n      cpu: 400m\n      # This value is being used as a source for default memory_limiter processor configurations\n      memory: 1000Mi/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1; sleep 1
+rm ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml; sleep 1
+mv ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1 ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml; sleep 1
+rm ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_*; sleep 1
+if [ $? = 0 ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# update the values.yaml file for transformations
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file for transformations"
+echo "** $date_string - $WORKSHOP_NUM step - otel: update the values.yaml file for transformations" >> ~/debug.txt
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml.tmp
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml | sed -z "s/  config: {}\n\n  # Discovery mode/  config: \n    \[CHANGE\]\n\n  # Discovery mode/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1; sleep 1
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_1 | sed -e "s/    \[CHANGE\]/    processors:\n      transform\/user01_rename_sourcetype:\n        error_mode: ignore\n        log_statements:\n          - context: log\n            statements:\n\[CHANGE\]/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_2; sleep 1
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_2 | sed -e "s/\[CHANGE\]/              # change to dynamic sourcetype based on log event data\n\[CHANGE\]/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_3; sleep 1
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_3 | sed -e "s/\[CHANGE\]/              - merge_maps(attributes, ExtractPatterns(body, \"^(?:.*?)\\\\\\\\s(?:.*?)\\\\\\\\s\\\\\\\\-\\\\\\\\s\\\\\\\\[(?P<http_info>.*?)\\\\\\\\]\\\\\\\\s\"), \"insert\")\n\[CHANGE\]/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_4; sleep 1
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_4 | sed -e "s/\[CHANGE\]/              - set(attributes\[\"com.splunk.sourcetype\"\], attributes\[\"http_info\"\]) where attributes\[\"http_info\"\] != nil and resource.attributes\[\"com.splunk.sourcetype\"\] == \"kube:container:user01-petclinic-otel-container01\"\n\[CHANGE\]/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_5; sleep 1
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_5 | sed -e "s/\[CHANGE\]/              # change to static sourcetype based on log event data\n\[CHANGE\]/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_6; sleep 1
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_6 | sed -e "s/\[CHANGE\]/              - merge_maps(attributes, ExtractPatterns(body, \"^(?P<runtime_error>java\\\\\\\\.lang\\\\\\\\.RuntimeException)\"), \"insert\")\n\[CHANGE\]/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_7; sleep 1
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_7 | sed -e "s/\[CHANGE\]/              - set(attributes[\"com.splunk.sourcetype\"], \"kube:container:petclinic:java:runtimeexception\") where attributes\[\"runtime_error\"\] == \"java.lang.RuntimeException\"\n\[CHANGE\]/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_8; sleep 1
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_8 | sed -e "s/\[CHANGE\]/              # add an additional severity key\/value pair based on log event data\n\[CHANGE\]/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_9; sleep 1
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_9 | sed -e "s/\[CHANGE\]/              - merge_maps(attributes, ExtractPatterns(\"ERROR\", \"^(?P<severity>.*)$\"), \"insert\") where attributes\[\"runtime_error\"\] == \"java.lang.RuntimeException\"\n\[CHANGE\]/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_10; sleep 1
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_10 | sed -e "s/\[CHANGE\]/    service:\n      pipelines:\n        logs:\n          processors:\n\[CHANGE\]/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_11; sleep 1
+cat ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_11 | sed -e "s/\[CHANGE\]/          - memory_limiter\n          - k8sattributes\n          - k8sattributes\n          - batch\n          - resourcedetection\n          - resource\n          - transform\/user01_rename_sourcetype/g;" > ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_12; sleep 1
+rm ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml; sleep 1
+mv ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_12 ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml; sleep 1
+rm ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector/values.yaml_*; sleep 1
+if [ $? = 0 ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# copy the k8s_workshop/k8s_otel directory to the splunk user
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: copy the k8s_workshop/k8s_otel directory to the splunk user"
+echo "** $date_string - $WORKSHOP_NUM step - otel: copy the k8s_workshop/k8s_otel directory to the splunk user" >> ~/debug.txt
+sudo cp -rf ~/k8s_workshop/k8s_otel /home/splunk/k8s_workshop/; sleep 1
+if [ $? = 0 ]; then
+sudo chown -R splunk:docker /home/splunk/k8s_workshop; sleep 1
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+# upgrade the otel collector using helm
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: upgrade the otel collector using helm"
+echo "** $date_string - $WORKSHOP_NUM step - otel: upgrade the otel collector using helm" >> ~/debug.txt
+result="$(sudo -H -u splunk bash -c "eval \$(minikube -p minikube docker-env); cd ~/k8s_workshop/k8s_otel/splunk-otel-collector-chart/helm-charts/splunk-otel-collector; helm upgrade $WS_USER-k8s-ws -f values.yaml ." &> /tmp/k8s_output.txt)"; sleep 5
+cat /tmp/k8s_output.txt >> ~/debug.txt
+result="$(cat /tmp/k8s_output.txt | grep "STATUS:" | awk '{print $2}')"; sleep 1
+if [ $result = "deployed" ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
+
+
+
+
 # # stop minikube as the splunk user
 # date_string="$(date)"
 # echo -n "** $date_string - $WORKSHOP_NUM step - minikube: stop minikube as the splunk user"
