@@ -28,6 +28,7 @@ else
 		date_string="$(date)"
 		echo "** $date_string - buildScript - stop - build script" >> ~/k8s-otel-workshop.log; sleep 5
 		exit 0
+  	else
 		if [ $COMPLETE_WORKSHOP_BUILD_ADVANCED_1 = "yes" ]; then
 			~/k8s-otel-workshop/k8s-otel-workshop-01-FW1-tasks_LATEST.sh >> ~/k8s-otel-workshop.log; sleep 5
 			~/k8s-otel-workshop/k8s-otel-workshop-02-FW2-tasks_LATEST.sh >> ~/k8s-otel-workshop.log; sleep 5
