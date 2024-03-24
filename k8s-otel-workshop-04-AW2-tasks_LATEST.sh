@@ -231,7 +231,12 @@ fi
 date_string="$(date)"
 echo -n "** $date_string - $WORKSHOP_NUM step - otel: make the directory for JVM auto instrumentation library"
 echo "** $date_string - $WORKSHOP_NUM step - otel: make the directory for JVM auto instrumentation library" >> ~/debug.txt
-mkdir -p ~/k8s_workshop/petclinic/spring-petclinic/target/splunk; sleep 1
+if [ -d ~/k8s_workshop/petclinic/spring-petclinic/target/splunk ]
+then
+	echo -n " ... directory already exists"; sleep 1
+else
+	mkdir -p ~/k8s_workshop/petclinic/spring-petclinic/target/splunk; sleep 1
+fi
 if [ $? = 0 ]; then
 echo " .... done"
 else
@@ -242,13 +247,18 @@ fi
 date_string="$(date)"
 echo -n "** $date_string - $WORKSHOP_NUM step - otel: download the latest splunk otel JVM auto instrumentation library"
 echo "** $date_string - $WORKSHOP_NUM step - otel: download the latest splunk otel JVM auto instrumentation library" >> ~/debug.txt
-result="$(curl -L https://github.com/signalfx/splunk-otel-java/releases/latest/download/splunk-otel-javaagent.jar -o ~/k8s_workshop/petclinic/spring-petclinic/target/splunk/splunk-otel-javaagent.jar &> /tmp/k8s_output.txt)"
-cat /tmp/k8s_output.txt >> ~/debug.txt
-result="$(cat /tmp/k8s_output.txt | tail -1 | sed -e 's/\r/\n/g;' | tail -1 | awk '{print $3}')"; sleep 1
-if [ $result = 100 ]; then
-echo " .... done"
+if [ -f ~/k8s_workshop/petclinic/spring-petclinic/target/splunk/splunk-otel-javaagent.jar ]
+then
+	echo -n " ... file already exists"; sleep 1; echo " .... done"
 else
-echo " .... failed"
+	result="$(curl -L https://github.com/signalfx/splunk-otel-java/releases/latest/download/splunk-otel-javaagent.jar -o ~/k8s_workshop/petclinic/spring-petclinic/target/splunk/splunk-otel-javaagent.jar &> /tmp/k8s_output.txt)"
+	cat /tmp/k8s_output.txt >> ~/debug.txt
+	result="$(cat /tmp/k8s_output.txt | tail -1 | sed -e 's/\r/\n/g;' | tail -1 | awk '{print $3}')"; sleep 1
+	if [ $result = 100 ]; then
+	echo " .... done"
+	else
+	echo " .... failed"
+	fi
 fi
 
 # create dockerfile in petclinic target directory
