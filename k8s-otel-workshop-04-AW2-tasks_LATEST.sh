@@ -227,6 +227,17 @@ else
 echo " .... failed"
 fi
 
+# make the directory for JVM auto instrumentation library
+date_string="$(date)"
+echo -n "** $date_string - $WORKSHOP_NUM step - otel: make the directory for JVM auto instrumentation library"
+echo "** $date_string - $WORKSHOP_NUM step - otel: make the directory for JVM auto instrumentation library" >> ~/debug.txt
+mkdir -p ~/k8s_workshop/petclinic/spring-petclinic/target/splunk; sleep 1
+if [ $? = 0 ]; then
+echo " .... done"
+else
+echo " .... failed"
+fi
+
 # download the latest splunk otel JVM auto instrumentation library
 date_string="$(date)"
 echo -n "** $date_string - $WORKSHOP_NUM step - otel: download the latest splunk otel JVM auto instrumentation library"
