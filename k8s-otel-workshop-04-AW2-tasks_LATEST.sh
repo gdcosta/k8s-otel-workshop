@@ -341,8 +341,8 @@ echo "** $date_string - $WORKSHOP_NUM step - petclinic: update logging format in
 sudo tee ~/k8s_workshop/petclinic/spring-petclinic/src/main/resources/application.properties <<EOF >> ~/debug.txt
 # database init, supports mysql too
 database=h2
-spring.sql.init.schema-locations=classpath*:db/${database}/schema.sql
-spring.sql.init.data-locations=classpath*:db/${database}/data.sql
+spring.sql.init.schema-locations=classpath*:db/\${database}/schema.sql
+spring.sql.init.data-locations=classpath*:db/\${database}/data.sql
 
 # Web
 spring.thymeleaf.mode=HTML
