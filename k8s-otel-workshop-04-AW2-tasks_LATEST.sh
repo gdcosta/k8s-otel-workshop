@@ -276,6 +276,8 @@ COPY * ./
 
 COPY ./splunk/splunk-otel-javaagent.jar ./
 
+ENV OTEL_EXPORTER_OTLP_PROTOCOL="grpc"
+
 ENV OTEL_EXPORTER_OTLP_ENDPOINT="http://minikube:4317"
 
 ENV OTEL_SERVICE_NAME="$WS_USER-k8s-petClinic-service"
