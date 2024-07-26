@@ -350,7 +350,7 @@ fi
 date_string="$(date)"
 echo -n "** $date_string - $WORKSHOP_NUM step - otel: download splunk otel collector source from github"
 echo "** $date_string - $WORKSHOP_NUM step - otel: download splunk otel collector source from github" >> ~/debug.txt
-result="$(git -C ~/k8s_workshop/k8s_otel clone https://github.com/signalfx/splunk-otel-collector-chart.git > /dev/null 2> /dev/null)"
+result="$(git -C ~/k8s_workshop/k8s_otel clone --branch splunk-otel-collector-0.103.0 https://github.com/signalfx/splunk-otel-collector-chart.git > /dev/null 2> /dev/null)"
 if [ $? = 0 ]; then
 echo " .... done"
 else
