@@ -225,7 +225,7 @@ if [ -f ~/k8s_workshop/petclinic/spring-petclinic/target/splunk/splunk-otel-java
 then
 	echo -n " ... file already exists"; sleep 1; echo " .... done"
 else
-	result="$(curl -L https://github.com/signalfx/splunk-otel-java/releases/tag/v2.5.0/splunk-otel-javaagent.jar -o ~/k8s_workshop/petclinic/spring-petclinic/target/splunk/splunk-otel-javaagent.jar &> /tmp/k8s_output.txt)"
+	result="$(curl -L https://github.com/signalfx/splunk-otel-java/releases/download/v2.5.0/splunk-otel-javaagent.jar -o ~/k8s_workshop/petclinic/spring-petclinic/target/splunk/splunk-otel-javaagent.jar &> /tmp/k8s_output.txt)"
 	cat /tmp/k8s_output.txt >> ~/debug.txt
 	result="$(cat /tmp/k8s_output.txt | tail -1 | sed -e 's/\r/\n/g;' | tail -1 | awk '{print $3}')"; sleep 1
 	if [ $result = 100 ]; then
